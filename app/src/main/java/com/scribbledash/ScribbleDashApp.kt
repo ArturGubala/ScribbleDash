@@ -31,7 +31,7 @@ fun ScribbleDashApp(
 ) {
     Scaffold(
         bottomBar = {
-            ScribbleDashNavigation(navController = appState.navController)
+            ScribbleDashNavigation(appState = appState)
         },
         containerColor = Color.Transparent
     ) {

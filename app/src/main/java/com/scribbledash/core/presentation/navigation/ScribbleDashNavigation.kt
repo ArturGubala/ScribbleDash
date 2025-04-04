@@ -1,8 +1,7 @@
 package com.scribbledash.core.presentation.navigation
 
 
-import androidx.compose.foundation.Image
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -10,36 +9,38 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
+import com.scribbledash.ScribbleDashAppState
+import com.scribbledash.ui.theme.MenuItemSelected
+import com.scribbledash.ui.theme.MenuItemUnselected
 
 @Composable
 fun ScribbleDashNavigation(
-    navController: NavController,
+    appState: ScribbleDashAppState,
     modifier: Modifier = Modifier
 ) {
     NavigationBar(
         containerColor = Color.White,
         modifier = modifier
     ) {
-        TopLevelDestination.entries.forEach { destination ->
-            val isSelected = navController
-                .currentDestination
+        val currentDestination = appState.currentDestination
+
+        appState.topLevelDestinations.forEach { destination ->
+            val isSelected =
+                currentDestination
                 .isTopLevelDestinationInHierarchy(destination)
 
             NavigationBarItem(
                 selected = isSelected,
                 onClick = {
-                    navController.navigate(destination.destination) {
-                        launchSingleTop = true
-                        restoreState = true
-                    }
+                    appState.navigateToTopLevelDestination(destination)
                 },
                 icon = {
-                    Image(
+                    Icon(
                         painter = painterResource(id = if (isSelected) destination.selectedIcon else destination.unselectedIcon),
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = if (isSelected) MenuItemSelected else MenuItemUnselected
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
@@ -61,11 +62,11 @@ private fun NavDestination?.isTopLevelDestinationInHierarchy(destination: TopLev
 
 object ScribbleDashNavigationDefaults {
     @Composable
-    fun navigationContentColor() = MaterialTheme.colorScheme.onSurfaceVariant
+    fun navigationContentColor() = Color.Transparent
 
     @Composable
-    fun navigationSelectedItemColor() = MaterialTheme.colorScheme.onPrimaryContainer
+    fun navigationSelectedItemColor() = MenuItemSelected
 
     @Composable
-    fun navigationIndicatorColor() = MaterialTheme.colorScheme.primaryContainer
+    fun navigationIndicatorColor() = Color.Transparent
 }
