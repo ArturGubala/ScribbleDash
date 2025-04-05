@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.scribbledash.R
+import com.scribbledash.core.presentation.components.ScribbleDashGameModeButton
 import com.scribbledash.core.presentation.components.ScribbleDashScreenTitle
 import com.scribbledash.core.presentation.components.ScribbleDashTopAppBar
 import com.scribbledash.core.presentation.utils.GradientScheme
@@ -76,6 +77,11 @@ private fun HomeScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            ScribbleDashGameModeButton(
+                image = R.drawable.ic_one_round_wonder,
+                description = R.string.one_round_wonder
             )
         }
     }
