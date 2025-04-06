@@ -48,4 +48,11 @@ val Typography = Typography(
         lineHeight = 24.sp,
         color = Text2
     ),
+    labelMedium = TextStyle(
+        fontFamily = Outfit,
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        color = Text2
+    )
 )
