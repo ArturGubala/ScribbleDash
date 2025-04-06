@@ -81,7 +81,8 @@ private fun HomeScreen(
             Spacer(modifier = Modifier.height(20.dp))
             ScribbleDashGameModeButton(
                 image = R.drawable.ic_one_round_wonder,
-                description = R.string.one_round_wonder
+                description = R.string.one_round_wonder,
+                onClick = {}
             )
         }
     }

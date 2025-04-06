@@ -30,8 +30,8 @@ import com.scribbledash.ui.theme.ScribbleDashTheme
 fun ScribbleDashGameModeButton(
     @DrawableRes image: Int,
     @StringRes description: Int,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
@@ -92,7 +92,8 @@ fun ScribbleDashGameModeButtonPreview() {
     ScribbleDashTheme {
         ScribbleDashGameModeButton(
             image = R.drawable.ic_one_round_wonder,
-            description = R.string.one_round_wonder
+            description = R.string.one_round_wonder,
+            onClick = {}
         )
     }
 }
