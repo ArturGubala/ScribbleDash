@@ -17,24 +17,38 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.scribbledash.R
+import com.scribbledash.core.domain.model.GameModeType
 import com.scribbledash.core.presentation.components.ScribbleDashGameModeButton
 import com.scribbledash.core.presentation.components.ScribbleDashScreenTitle
 import com.scribbledash.core.presentation.components.ScribbleDashTopAppBar
+import com.scribbledash.core.presentation.screens.difficultylevel.navigation.navigateToDifficultyLevel
 import com.scribbledash.core.presentation.utils.GradientScheme
+import com.scribbledash.core.presentation.utils.ObserveAsEvents
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 internal fun HomeRoute(
-    onBackClick: () -> Unit
+    navController: NavController,
+    viewModel: HomeViewModel = koinViewModel()
 ) {
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is HomeEvents.NavigateToDifficultyLevel -> {
+                navController.navigateToDifficultyLevel(event.finalDestination)
+            }
+        }
+    }
+
     HomeScreen(
-        onBackClick = onBackClick
+        onAction = viewModel::onAction
     )
 }
 
 @Composable
 private fun HomeScreen(
-    onBackClick: () -> Unit
+    onAction: (HomeAction) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -82,7 +96,9 @@ private fun HomeScreen(
             ScribbleDashGameModeButton(
                 image = R.drawable.ic_one_round_wonder,
                 description = R.string.one_round_wonder,
-                onClick = {}
+                onClick = {
+                    onAction(HomeAction.OnGameModeTypeClick(GameModeType.OneRoundWonder.mode))
+                }
             )
         }
     }
