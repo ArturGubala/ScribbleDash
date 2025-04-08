@@ -25,29 +25,53 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.scribbledash.R
 import com.scribbledash.core.presentation.components.ScribbleDashDifficultyLevelButton
 import com.scribbledash.core.presentation.components.ScribbleDashScreenTitle
 import com.scribbledash.core.presentation.components.ScribbleDashTopAppBar
-import com.scribbledash.core.presentation.utils.GradientScheme
+import com.scribbledash.core.presentation.utils.GameModeTypeUiModel
+import com.scribbledash.core.presentation.utils.ObserveAsEvents
+import com.scribbledash.core.presentation.utils.toGameModeTypeUiModel
+import com.scribbledash.gamemodes.oneroundwonder.navigation.navigateToOneRoundWonder
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun DifficultyLevelRoute(
-    onBackClick: () -> Unit
+    finalDestination: String,
+    navController: NavController,
+    onBackClick: () -> Unit,
+    viewModel: DifficultyLevelViewModel = koinViewModel()
 ) {
-    DifficultyLevelScreen()
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is DifficultyLevelEvent.NavigateToDestination -> {
+                when (finalDestination.toGameModeTypeUiModel()) {
+                    is GameModeTypeUiModel.OneRoundWonder -> {
+                        navController.navigateToOneRoundWonder()
+                    }
+                }
+            }
+        }
+    }
+
+    DifficultyLevelScreen(
+        onBackClick = onBackClick,
+        onAction = viewModel::onAction
+    )
 }
 
 @Composable
 fun DifficultyLevelScreen(
-
+    onBackClick: () -> Unit,
+    onAction: (DifficultyLevelAction) -> Unit
 ) {
     Scaffold(
         topBar = {
             ScribbleDashTopAppBar(
                 actions = {
                     IconButton(
-                        onClick = {  }
+                        onClick = onBackClick
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_round_cross),
@@ -104,7 +128,9 @@ fun DifficultyLevelScreen(
                         )
                     },
                     description = R.string.difficulty_beginner,
-                    onClick = {},
+                    onClick = {
+                        onAction(DifficultyLevelAction.OnDifficultyLevelClick)
+                    },
                     imageAlignment = Alignment.TopEnd
                 )
                 ScribbleDashDifficultyLevelButton(
@@ -116,7 +142,9 @@ fun DifficultyLevelScreen(
                         )
                     },
                     description = R.string.difficulty_challenging,
-                    onClick = {},
+                    onClick = {
+                        onAction(DifficultyLevelAction.OnDifficultyLevelClick)
+                    },
                     modifier = Modifier.offset(y = (-16).dp)
                 )
                 ScribbleDashDifficultyLevelButton(
@@ -127,7 +155,9 @@ fun DifficultyLevelScreen(
                         )
                     },
                     description = R.string.difficulty_master,
-                    onClick = {}
+                    onClick = {
+                        onAction(DifficultyLevelAction.OnDifficultyLevelClick)
+                    }
                 )
             }
         }
