@@ -1,3 +1,5 @@
 package com.scribbledash.gamemodes.oneroundwonder
 
-interface OneRoundWonderAction {}
+interface OneRoundWonderAction {
+    object OnBackClicked : OneRoundWonderAction
+}

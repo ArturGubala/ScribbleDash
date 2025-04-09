@@ -1,5 +1,6 @@
 package com.scribbledash.gamemodes.oneroundwonder
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +25,7 @@ import androidx.navigation.NavController
 import com.scribbledash.R
 import com.scribbledash.core.presentation.components.ScribbleDashScreenTitle
 import com.scribbledash.core.presentation.components.ScribbleDashTopAppBar
+import com.scribbledash.core.presentation.utils.ObserveAsEvents
 import com.scribbledash.home.navigation.HomeScreen
 import org.koin.androidx.compose.koinViewModel
 
@@ -33,11 +35,20 @@ internal fun OneRoundWonderRoute(
     viewModel: OneRoundWonderViewModel = koinViewModel()
 
 ) {
+    BackHandler {
+        viewModel.onAction(OneRoundWonderAction.OnBackClicked)
+    }
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is OneRoundWonderEvent.NavigateBackToHome -> {
+                navController.popBackStack(route = HomeScreen, inclusive = false)
+            }
+        }
+    }
 
     OneRoundWonderScreen(
-        onBackClick = {
-            navController.popBackStack(HomeScreen, false)
-        }
+        onBackClick = { viewModel.onAction(OneRoundWonderAction.OnBackClicked) }
     )
 }
 

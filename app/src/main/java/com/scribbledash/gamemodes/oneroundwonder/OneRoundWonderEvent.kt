@@ -1,3 +1,5 @@
 package com.scribbledash.gamemodes.oneroundwonder
 
-interface OneRoundWonderEvent {}
+interface OneRoundWonderEvent {
+    object NavigateBackToHome : OneRoundWonderEvent
+}
