@@ -27,7 +27,7 @@ import com.scribbledash.R
 import com.scribbledash.ui.theme.ScribbleDashTheme
 
 @Composable
-fun ScribbleDashGameModeButton(
+fun ScribbleDashGameModeCard(
     @DrawableRes image: Int,
     @StringRes description: Int,
     onClick: () -> Unit,
@@ -90,7 +90,7 @@ fun ScribbleDashGameModeButton(
 @Composable
 fun ScribbleDashGameModeButtonPreview() {
     ScribbleDashTheme {
-        ScribbleDashGameModeButton(
+        ScribbleDashGameModeCard(
             image = R.drawable.ic_one_round_wonder,
             description = R.string.one_round_wonder,
             onClick = {}

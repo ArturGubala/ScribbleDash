@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.scribbledash.R
 import com.scribbledash.core.domain.model.GameModeType
-import com.scribbledash.core.presentation.components.ScribbleDashGameModeButton
+import com.scribbledash.core.presentation.components.ScribbleDashGameModeCard
 import com.scribbledash.core.presentation.components.ScribbleDashScreenTitle
 import com.scribbledash.core.presentation.components.ScribbleDashTopAppBar
 import com.scribbledash.core.presentation.screens.difficultylevel.navigation.navigateToDifficultyLevel
@@ -93,7 +93,7 @@ private fun HomeScreen(
                 }
             )
             Spacer(modifier = Modifier.height(20.dp))
-            ScribbleDashGameModeButton(
+            ScribbleDashGameModeCard(
                 image = R.drawable.ic_one_round_wonder,
                 description = R.string.one_round_wonder,
                 onClick = {
