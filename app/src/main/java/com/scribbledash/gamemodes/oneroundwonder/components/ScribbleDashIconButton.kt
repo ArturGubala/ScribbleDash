@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,14 +37,15 @@ fun ScribbleDashIconButton(
                 shape = RoundedCornerShape(22.dp)
             )
             .size(64.dp)
-            .padding(6.dp)
+            .clip(RoundedCornerShape(22.dp))
             .then(
                 if (isActive) {
                     Modifier.clickable(onClick = onClick)
                 } else {
                     Modifier.alpha(.4f)
                 }
-            ),
+            )
+            .padding(6.dp),
         contentAlignment = Alignment.Center
     ) {
         Icon(
