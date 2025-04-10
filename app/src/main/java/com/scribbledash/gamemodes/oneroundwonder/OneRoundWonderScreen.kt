@@ -2,13 +2,18 @@ package com.scribbledash.gamemodes.oneroundwonder
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +31,8 @@ import com.scribbledash.R
 import com.scribbledash.core.presentation.components.ScribbleDashScreenTitle
 import com.scribbledash.core.presentation.components.ScribbleDashTopAppBar
 import com.scribbledash.core.presentation.utils.ObserveAsEvents
+import com.scribbledash.gamemodes.oneroundwonder.components.ScribbleDashButton
+import com.scribbledash.gamemodes.oneroundwonder.components.ScribbleDashIconButton
 import com.scribbledash.home.navigation.HomeScreen
 import org.koin.androidx.compose.koinViewModel
 
@@ -81,7 +88,7 @@ private fun OneRoundWonderScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 16.dp)
+                .padding(start = 16.dp, end = 16.dp, bottom = 24.dp)
         ) {
             Spacer(modifier = Modifier.height(53.dp))
             ScribbleDashScreenTitle(
@@ -95,6 +102,32 @@ private fun OneRoundWonderScreen(
                 },
                 modifier = Modifier.fillMaxWidth(),
             )
+            Spacer(modifier = Modifier.weight(1f))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                ScribbleDashIconButton(
+                    icon = R.drawable.ic_reply,
+                    onClick = {},
+                    modifier = Modifier
+                        .size(64.dp)
+                )
+                ScribbleDashIconButton(
+                    icon = R.drawable.ic_forward,
+                    onClick = {},
+                    modifier = Modifier
+                        .size(64.dp),
+                    isActive = false
+                )
+                ScribbleDashButton(
+                    description = stringResource(R.string.clear_canvas),
+                    onClick = {},
+                    modifier = Modifier
+                        .width(201.dp)
+                        .height(64.dp)
+                )
+            }
         }
     }
 }
