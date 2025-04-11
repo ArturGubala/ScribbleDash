@@ -2,6 +2,12 @@ package com.scribbledash
 
 import android.annotation.SuppressLint
 import android.app.Application
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -43,7 +49,13 @@ fun ScribbleDashApp(
 
     Scaffold(
         bottomBar = {
-            if (showBottomAppBar){ ScribbleDashNavigation(appState = appState) }
+            AnimatedVisibility(
+                visible = showBottomAppBar,
+                enter = fadeIn(animationSpec = tween(700)) + slideInVertically(animationSpec = tween(700)) { it },
+                exit = fadeOut(animationSpec = tween(700)) + slideOutVertically(animationSpec = tween(700)) { it }
+            ) {
+                ScribbleDashNavigation(appState = appState)
+            }
         },
         containerColor = Color.Transparent
     ) {
