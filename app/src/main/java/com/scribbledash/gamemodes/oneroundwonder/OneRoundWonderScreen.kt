@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,18 +19,21 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.scribbledash.R
 import com.scribbledash.core.presentation.components.ScribbleDashScreenTitle
 import com.scribbledash.core.presentation.components.ScribbleDashTopAppBar
 import com.scribbledash.core.presentation.utils.ObserveAsEvents
 import com.scribbledash.gamemodes.oneroundwonder.components.ScribbleDashButton
+import com.scribbledash.gamemodes.oneroundwonder.components.ScribbleDashDrawingArea
 import com.scribbledash.gamemodes.oneroundwonder.components.ScribbleDashIconButton
 import com.scribbledash.home.navigation.HomeScreen
 import org.koin.androidx.compose.koinViewModel
@@ -40,8 +42,9 @@ import org.koin.androidx.compose.koinViewModel
 internal fun OneRoundWonderRoute(
     navController: NavController,
     viewModel: OneRoundWonderViewModel = koinViewModel()
-
 ) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
     BackHandler {
         viewModel.onAction(OneRoundWonderAction.OnBackClicked)
     }
@@ -55,13 +58,17 @@ internal fun OneRoundWonderRoute(
     }
 
     OneRoundWonderScreen(
-        onBackClick = { viewModel.onAction(OneRoundWonderAction.OnBackClicked) }
+        onBackClick = { viewModel.onAction(OneRoundWonderAction.OnBackClicked) },
+        state = state,
+        onAction = viewModel::onAction
     )
 }
 
 @Composable
 private fun OneRoundWonderScreen(
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    state: OneRoundWonderState,
+    onAction: (OneRoundWonderAction) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -102,6 +109,15 @@ private fun OneRoundWonderScreen(
                 },
                 modifier = Modifier.fillMaxWidth(),
             )
+            Spacer(modifier = Modifier.height(32.dp))
+            ScribbleDashDrawingArea(
+                currentPath = state.currentPath,
+                paths = state.paths,
+                onAction = onAction,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
             Spacer(modifier = Modifier.weight(1f))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -111,21 +127,23 @@ private fun OneRoundWonderScreen(
                     icon = R.drawable.ic_reply,
                     onClick = {},
                     modifier = Modifier
-                        .size(64.dp)
+                        .size(64.dp),
+                    isActive = state.isUndoButtonActive
                 )
                 ScribbleDashIconButton(
                     icon = R.drawable.ic_forward,
                     onClick = {},
                     modifier = Modifier
                         .size(64.dp),
-                    isActive = false
+                    isActive = state.isRedoButtonActive
                 )
                 ScribbleDashButton(
                     description = stringResource(R.string.clear_canvas),
-                    onClick = {},
+                    onClick = { onAction(OneRoundWonderAction.OnClearCanvasClick) },
                     modifier = Modifier
                         .width(201.dp)
-                        .height(64.dp)
+                        .height(64.dp),
+                    isActive = state.isClearCanvasButtonActive
                 )
             }
         }
