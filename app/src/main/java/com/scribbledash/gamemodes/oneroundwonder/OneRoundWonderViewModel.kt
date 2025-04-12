@@ -62,24 +62,69 @@ class OneRoundWonderViewModel(): ViewModel() {
 
     private fun onStopDrawing() {
         val currentPathData = state.value.currentPath ?: return
+        val newUndoPaths = _state.value.undoPaths.apply {
+            if (size >= 5) removeFirst()
+            addLast(currentPathData)
+        }
         _state.update { it.copy(
             currentPath = null,
-            paths = it.paths + currentPathData
+            paths = it.paths + currentPathData,
+            undoPaths = ArrayDeque(newUndoPaths),
+            redoPaths = ArrayDeque()
         ) }
     }
 
     private fun onUndoClick() {
+        val undoStack = _state.value.undoPaths
+        val currentPaths = _state.value.paths
 
+        if (undoStack.isNotEmpty() && currentPaths.isNotEmpty()) {
+            val lastPath = undoStack.removeLast()
+            val newPaths = currentPaths.dropLast(1)
+            val newRedoPaths = _state.value.redoPaths.apply {
+                if (size >= 5) removeFirst()
+                addLast(lastPath)
+            }
+
+            _state.update {
+                it.copy(
+                    paths = newPaths,
+                    undoPaths = ArrayDeque(undoStack),
+                    redoPaths = ArrayDeque(newRedoPaths)
+                )
+            }
+        }
     }
 
     private fun onRedoClick() {
+        val redoStack = _state.value.redoPaths
 
+        if (redoStack.isNotEmpty()) {
+            val lastPath = redoStack.removeLast()
+            val newPaths = _state.value.paths + lastPath
+            val newUndoPaths = _state.value.undoPaths.apply {
+                if (size >= 5) removeFirst()
+                addLast(lastPath)
+            }
+
+            _state.update {
+                it.copy(
+                    paths = newPaths,
+                    undoPaths = ArrayDeque(newUndoPaths),
+                    redoPaths = ArrayDeque(redoStack)
+                )
+            }
+        }
     }
 
     private fun onClearCanvasClick() {
-        _state.update { it.copy(
-            currentPath = null,
-            paths = emptyList()
-        ) }
+        _state.update {
+            it.copy(
+                currentPath = null,
+                paths = emptyList(),
+                undoPaths = ArrayDeque(),
+                redoPaths = ArrayDeque()
+            )
+        }
     }
 }

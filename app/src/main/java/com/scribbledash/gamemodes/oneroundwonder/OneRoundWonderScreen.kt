@@ -125,14 +125,14 @@ private fun OneRoundWonderScreen(
             ) {
                 ScribbleDashIconButton(
                     icon = R.drawable.ic_reply,
-                    onClick = {},
+                    onClick = { onAction(OneRoundWonderAction.OnUndoClick) },
                     modifier = Modifier
                         .size(64.dp),
                     isActive = state.isUndoButtonActive
                 )
                 ScribbleDashIconButton(
                     icon = R.drawable.ic_forward,
-                    onClick = {},
+                    onClick = { onAction(OneRoundWonderAction.OnRedoClick) },
                     modifier = Modifier
                         .size(64.dp),
                     isActive = state.isRedoButtonActive
