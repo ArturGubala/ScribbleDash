@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -22,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -119,14 +117,8 @@ private fun OneRoundWonderScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .shadow(
-                        elevation = 12.dp,
-                        shape = RoundedCornerShape(36.dp),
-                        ambientColor = Color(0x1F726558),
-                        spotColor = Color(0x1F726558)
-                    )
             )
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(192.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
