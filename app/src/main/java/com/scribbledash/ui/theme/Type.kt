@@ -24,6 +24,10 @@ val Outfit = FontFamily(
     Font(
         resId = R.font.outfit_medium,
         weight = FontWeight.Medium
+    ),
+    Font(
+        resId = R.font.outfit_semibold,
+        weight = FontWeight.SemiBold
     )
 )
 
@@ -62,5 +66,12 @@ val Typography = Typography(
         fontSize = 18.sp,
         lineHeight = 26.sp,
         color = Color.White
+    ),
+    labelLarge = TextStyle(
+        fontFamily = Outfit,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 24.sp,
+        lineHeight = 28.sp,
+        color = Text
     )
 )
