@@ -39,7 +39,7 @@ fun ScribbleDashNavigation(
                     Icon(
                         painter = painterResource(id = if (isSelected) destination.selectedIcon else destination.unselectedIcon),
                         contentDescription = null,
-                        tint = if (isSelected) MenuItemSelected else MenuItemUnselected
+                        tint = if (isSelected) destination.selectedColor else destination.unselectedColor
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
