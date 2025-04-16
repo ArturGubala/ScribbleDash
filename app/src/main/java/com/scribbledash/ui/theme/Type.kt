@@ -46,6 +46,13 @@ val Typography = Typography(
         lineHeight = 44.sp,
         color = Text
     ),
+    bodySmall = TextStyle(
+        fontFamily = Outfit,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 18.sp,
+        color = Text2
+    ),
     bodyMedium = TextStyle(
         fontFamily = Outfit,
         fontWeight = FontWeight.Normal,
@@ -66,6 +73,13 @@ val Typography = Typography(
         fontSize = 18.sp,
         lineHeight = 26.sp,
         color = Color.White
+    ),
+    headlineLarge = TextStyle(
+        fontFamily = BagelFatOne,
+        fontWeight = FontWeight.Normal,
+        fontSize = 34.sp,
+        lineHeight = 48.sp,
+        color = Text
     ),
     labelLarge = TextStyle(
         fontFamily = Outfit,
