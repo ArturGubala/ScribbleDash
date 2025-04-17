@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.scribbledash.gamemodes.oneroundwonder.model.PathData
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -34,6 +35,7 @@ class OneRoundWonderViewModel(): ViewModel() {
             OneRoundWonderAction.OnUndoClick -> onUndoClick()
             OneRoundWonderAction.OnRedoClick -> onRedoClick()
             OneRoundWonderAction.OnClearCanvasClick -> onClearCanvasClick()
+            OneRoundWonderAction.ShowPreview -> showPreview()
         }
     }
 
@@ -125,6 +127,17 @@ class OneRoundWonderViewModel(): ViewModel() {
                 undoPaths = ArrayDeque(),
                 redoPaths = ArrayDeque()
             )
+        }
+    }
+
+    private fun showPreview() {
+        viewModelScope.launch {
+            _state.update { it.copy(isPreviewVisible = true) }
+            for (second in 3 downTo 1) {
+                _state.update { it.copy(remainingTime = second) }
+                delay(1000L)
+            }
+            _state.update { it.copy(isPreviewVisible = false) }
         }
     }
 }

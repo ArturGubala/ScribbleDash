@@ -10,4 +10,5 @@ interface OneRoundWonderAction {
     data object OnUndoClick: OneRoundWonderAction
     data object OnRedoClick: OneRoundWonderAction
     data object OnClearCanvasClick: OneRoundWonderAction
+    data object ShowPreview: OneRoundWonderAction
 }

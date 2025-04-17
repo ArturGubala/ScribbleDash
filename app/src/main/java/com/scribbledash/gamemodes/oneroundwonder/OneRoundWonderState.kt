@@ -7,7 +7,9 @@ data class OneRoundWonderState (
     val currentPath: PathData? = null,
     val paths: List<PathData> = emptyList(),
     val undoPaths: ArrayDeque<PathData> = ArrayDeque(),
-    val redoPaths: ArrayDeque<PathData> = ArrayDeque()
+    val redoPaths: ArrayDeque<PathData> = ArrayDeque(),
+    val isPreviewVisible: Boolean = false,
+    val remainingTime: Int = 0
 ) {
     val isClearCanvasButtonActive: Boolean
         get() = paths.isNotEmpty()
