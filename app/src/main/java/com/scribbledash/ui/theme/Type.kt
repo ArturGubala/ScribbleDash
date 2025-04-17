@@ -74,6 +74,13 @@ val Typography = Typography(
         lineHeight = 26.sp,
         color = Color.White
     ),
+    headlineMedium = TextStyle(
+        fontFamily = BagelFatOne,
+        fontWeight = FontWeight.Normal,
+        fontSize = 26.sp,
+        lineHeight = 30.sp,
+        color = Text
+    ),
     headlineLarge = TextStyle(
         fontFamily = BagelFatOne,
         fontWeight = FontWeight.Normal,
