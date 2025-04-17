@@ -38,7 +38,8 @@ fun ScribbleDashDrawingArea(
     paths: List<PathData>,
     onAction: (OneRoundWonderAction) -> Unit,
     modifier: Modifier = Modifier,
-    strokeColor: Color = Color.Black
+    strokeColor: Color = Color.Black,
+    canDrawing: Boolean = true
 ) {
     Box(
         modifier = modifier
@@ -102,21 +103,25 @@ fun ScribbleDashDrawingArea(
                 modifier = modifier
                     .fillMaxSize()
                     .clipToBounds()
-                    .pointerInput(true) {
-                        detectDragGestures(
-                            onDragStart = {
-                                onAction(OneRoundWonderAction.OnStartDrawing)
-                            },
-                            onDragEnd = {
-                                onAction(OneRoundWonderAction.OnStopDrawing)
-                            },
-                            onDrag = { change, _ ->
-                                onAction(OneRoundWonderAction.OnDrawing(change.position))
-                            },
-                            onDragCancel = {
-                                onAction(OneRoundWonderAction.OnStopDrawing)
-                            },
-                        )
+                    .let {
+                        if (canDrawing) {
+                            it.pointerInput(true) {
+                                detectDragGestures(
+                                    onDragStart = {
+                                        onAction(OneRoundWonderAction.OnStartDrawing)
+                                    },
+                                    onDragEnd = {
+                                        onAction(OneRoundWonderAction.OnStopDrawing)
+                                    },
+                                    onDrag = { change, _ ->
+                                        onAction(OneRoundWonderAction.OnDrawing(change.position))
+                                    },
+                                    onDragCancel = {
+                                        onAction(OneRoundWonderAction.OnStopDrawing)
+                                    },
+                                )
+                            }
+                        } else it
                     }
             ) {
                 paths.fastForEach { pathData ->
