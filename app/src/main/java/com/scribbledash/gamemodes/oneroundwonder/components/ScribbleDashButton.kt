@@ -84,14 +84,14 @@ fun ScribbleDashButtonPreview() {
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             ScribbleDashButton(
-                description = stringResource(R.string.clear_canvas),
+                description = stringResource(R.string.done),
                 onClick = {},
                 modifier = Modifier
                     .width(201.dp)
                     .height(64.dp)
             )
             ScribbleDashButton(
-                description = stringResource(R.string.clear_canvas),
+                description = stringResource(R.string.done),
                 onClick = {},
                 modifier = Modifier
                     .width(201.dp)
