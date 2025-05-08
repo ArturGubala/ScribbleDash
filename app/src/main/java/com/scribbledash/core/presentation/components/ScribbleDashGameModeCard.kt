@@ -28,8 +28,10 @@ import com.scribbledash.ui.theme.ScribbleDashTheme
 fun ScribbleDashGameModeCard(
     @DrawableRes image: Int,
     @StringRes description: Int,
+    borderColor: Color,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    imageVerticalAlignment: Alignment.Vertical = Alignment.Bottom
 ) {
     Box(
         modifier = modifier
@@ -39,7 +41,7 @@ fun ScribbleDashGameModeCard(
                 spotColor = Color(0x1F726558)
             )
             .background(
-                color = Color(0xFF0DD280),
+                color = borderColor,
                 shape = RoundedCornerShape(20.dp)
             )
             .padding(all = 8.dp)
@@ -72,7 +74,9 @@ fun ScribbleDashGameModeCard(
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
-                Box {
+                Box(
+                    modifier = Modifier.align(alignment = imageVerticalAlignment)
+                ) {
                     Image(
                         painter = painterResource(id = image),
                         contentDescription = null,
@@ -88,9 +92,11 @@ fun ScribbleDashGameModeCard(
 fun ScribbleDashGameModeButtonPreview() {
     ScribbleDashTheme {
         ScribbleDashGameModeCard(
-            image = R.drawable.ic_one_round_wonder,
-            description = R.string.one_round_wonder,
-            onClick = {}
+            image = R.drawable.ic_speed_draw,
+            description = R.string.speed_draw,
+            borderColor = Color(0xFF238CFF),
+            onClick = {},
+            imageVerticalAlignment = Alignment.Top
         )
     }
 }
