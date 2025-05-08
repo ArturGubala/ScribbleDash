@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -96,9 +97,25 @@ private fun HomeScreen(
             ScribbleDashGameModeCard(
                 image = R.drawable.ic_one_round_wonder,
                 description = R.string.one_round_wonder,
+                borderColor = Color(0xFF0DD280),
                 onClick = {
                     onAction(HomeAction.OnGameModeTypeClick(GameModeType.OneRoundWonder.mode))
                 }
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            ScribbleDashGameModeCard(
+                image = R.drawable.ic_speed_draw,
+                description = R.string.speed_draw,
+                borderColor = Color(0xFF238CFF),
+                onClick = {},
+                imageVerticalAlignment = Alignment.Top
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            ScribbleDashGameModeCard(
+                image = R.drawable.ic_endless_mode,
+                description = R.string.endless_mode,
+                borderColor = Color(0xFFFA852C),
+                onClick = {}
             )
         }
     }
