@@ -11,6 +11,8 @@ import org.xmlpull.v1.XmlPullParser
 
 object VectorXmlParser {
 
+    data class ViewportSize(val width: Float, val height: Float)
+
     fun parseVectorDrawable(context: Context, xmlResourceId: Int): List<Path> {
         val inputStream = context.resources.openRawResource(xmlResourceId)
         val parser = Xml.newPullParser()
@@ -70,6 +72,32 @@ object VectorXmlParser {
 //
 //        return PathData(offsetList)
 //    }
+
+    fun getViewportSize(context: Context, xmlResourceId: Int): ViewportSize? {
+        val inputStream = context.resources.openRawResource(xmlResourceId)
+        val parser = Xml.newPullParser()
+        parser.setInput(inputStream, null)
+
+        return try {
+            var eventType = parser.eventType
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG && parser.name == "vector") {
+                    val width = parser.getAttributeValue("http://schemas.android.com/apk/res/android", "viewportWidth")?.toFloatOrNull()
+                    val height = parser.getAttributeValue("http://schemas.android.com/apk/res/android", "viewportHeight")?.toFloatOrNull()
+                    if (width != null && height != null) {
+                        return ViewportSize(width, height)
+                    }
+                }
+                eventType = parser.next()
+            }
+            null
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            inputStream.close()
+        }
+    }
 
     private fun pathToOffsets(path: Path, steps: Int = 100): List<Offset> {
         val pathMeasure = PathMeasure(path, false)
