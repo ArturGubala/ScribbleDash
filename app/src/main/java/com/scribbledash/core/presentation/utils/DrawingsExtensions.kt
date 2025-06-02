@@ -3,7 +3,7 @@ package com.scribbledash.core.presentation.utils
 import com.scribbledash.R
 import com.scribbledash.core.domain.model.Drawings
 
-fun getdrawingIdForDrawing(drawing: Drawings): Int {
+fun getDrawableRawIdForDrawing(drawing: Drawings): Int {
     return when (drawing) {
         Drawings.ALIEN -> R.raw.img_alien
         Drawings.BICYCLE -> R.raw.img_bicycle
