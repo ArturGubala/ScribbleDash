@@ -1,5 +1,7 @@
 package com.scribbledash.gamemodes.oneroundwonder.components
 
+import android.graphics.Matrix
+import android.graphics.RectF
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,6 +18,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.AndroidPath
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -30,6 +33,7 @@ import com.scribbledash.gamemodes.oneroundwonder.OneRoundWonderAction
 import com.scribbledash.gamemodes.oneroundwonder.model.PathData
 import com.scribbledash.ui.theme.ScribbleDashTheme
 import kotlin.math.abs
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 @Composable
@@ -39,7 +43,9 @@ fun ScribbleDashDrawingArea(
     onAction: (OneRoundWonderAction) -> Unit,
     modifier: Modifier = Modifier,
     strokeColor: Color = Color.Black,
-    canDrawing: Boolean = true
+    canDrawing: Boolean = true,
+    width: Float = 0f,
+    height: Float = 0f
 ) {
     Box(
         modifier = modifier
@@ -124,20 +130,65 @@ fun ScribbleDashDrawingArea(
                         } else it
                     }
             ) {
-                paths.fastForEach { pathData ->
-                    drawPath(
-                        path = pathData.path,
-                        color = strokeColor,
+                if (canDrawing) {
+                    paths.fastForEach { pathData ->
+                        drawPath(
+                            path = pathData.path,
+                            color = strokeColor,
+                        )
+                    }
+                    currentPath?.let {
+                        drawPath(
+                            path = it.path,
+                            color = strokeColor
+                        )
+                    }
+                } else {
+                    val totalBounds = computeTotalBounds(paths)
+
+                    val drawingWidth = totalBounds.width()
+                    val drawingHeight = totalBounds.height()
+
+                    val scaleFactor = min(
+                        size.width / width,
+                        size.height / height
                     )
-                }
-                currentPath?.let {
-                    drawPath(
-                        path = it.path,
-                        color = strokeColor
-                    )
+
+                    val translateX = (size.width - drawingWidth * scaleFactor) / 2f
+                    val translateY = (size.height - drawingHeight * scaleFactor) / 2f
+
+                    val matrix = Matrix().apply {
+                        postTranslate(-totalBounds.left, -totalBounds.top)
+                        postScale(scaleFactor, scaleFactor)
+                        postTranslate(translateX, translateY)
+
+                    }
+
+                    paths.fastForEach { pathData ->
+                        val transformed = pathData.path.transformOffsets(matrix)
+                        drawPath(
+                            path = transformed,
+                            color = strokeColor
+                        )
+                    }
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun ScribbleDashDrawingAreaPreview() {
+    ScribbleDashTheme {
+        ScribbleDashDrawingArea(
+            currentPath = null,
+            paths = emptyList(),
+            onAction = {},
+            modifier = Modifier
+                .height(360.dp)
+                .width(354.dp)
+        )
     }
 }
 
@@ -178,17 +229,34 @@ private fun DrawScope.drawPath(
     )
 }
 
-@Preview
-@Composable
-fun ScribbleDashDrawingAreaPreview() {
-    ScribbleDashTheme {
-        ScribbleDashDrawingArea(
-            currentPath = null,
-            paths = emptyList(),
-            onAction = {},
-            modifier = Modifier
-                .height(360.dp)
-                .width(354.dp)
-        )
+fun AndroidPath.asComposePath(): Path {
+    return this.asComposePath()
+}
+
+fun List<Offset>.transformOffsets(matrix: Matrix): List<Offset> {
+    return map {
+        val pts = floatArrayOf(it.x, it.y)
+        matrix.mapPoints(pts)
+        Offset(pts[0], pts[1])
     }
 }
+
+fun computeTotalBounds(paths: List<PathData>): RectF {
+    val totalBounds = RectF()
+
+    for (pathData in paths) {
+        val offsets = pathData.path
+        if (offsets.isEmpty()) continue
+
+        val minX = offsets.minOf { it.x }
+        val maxX = offsets.maxOf { it.x }
+        val minY = offsets.minOf { it.y }
+        val maxY = offsets.maxOf { it.y }
+
+        val rect = RectF(minX, minY, maxX, maxY)
+        totalBounds.union(rect)
+    }
+
+    return totalBounds
+}
+
