@@ -168,7 +168,8 @@ fun ScribbleDashDrawingArea(
                         val transformed = pathData.path.transformOffsets(matrix)
                         drawPath(
                             path = transformed,
-                            color = strokeColor
+                            color = strokeColor,
+                            smoothness = 1
                         )
                     }
                 }
@@ -195,13 +196,13 @@ fun ScribbleDashDrawingAreaPreview() {
 private fun DrawScope.drawPath(
     path: List<Offset>,
     color: Color,
+    smoothness: Int = 5,
     thickness: Float = 10f
 ) {
     val smoothedPath = Path().apply {
         if(path.isNotEmpty()) {
             moveTo(path.first().x, path.first().y)
 
-            val smoothness = 5
             for(i in 1..path.lastIndex) {
                 val from = path[i - 1]
                 val to = path[i]
