@@ -23,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -30,20 +31,24 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.scribbledash.R
+import com.scribbledash.core.domain.model.Drawings
 import com.scribbledash.core.presentation.components.CountdownText
 import com.scribbledash.core.presentation.components.ScribbleDashScreenTitle
 import com.scribbledash.core.presentation.components.ScribbleDashTopAppBar
 import com.scribbledash.core.presentation.utils.ObserveAsEvents
+import com.scribbledash.core.presentation.utils.getDrawableRawIdForDrawing
 import com.scribbledash.gamemodes.oneroundwonder.components.ScribbleDashButton
 import com.scribbledash.gamemodes.oneroundwonder.components.ScribbleDashDrawingArea
 import com.scribbledash.gamemodes.oneroundwonder.components.ScribbleDashIconButton
+import com.scribbledash.gamemodes.oneroundwonder.model.PathData
+import com.scribbledash.gamemodes.oneroundwonder.utils.VectorXmlParser
 import com.scribbledash.home.navigation.HomeScreen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 internal fun OneRoundWonderRoute(
     navController: NavController,
-    viewModel: OneRoundWonderViewModel = koinViewModel()
+    viewModel: OneRoundWonderViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -74,7 +79,7 @@ internal fun OneRoundWonderRoute(
 private fun OneRoundWonderScreen(
     onBackClick: () -> Unit,
     state: OneRoundWonderState,
-    onAction: (OneRoundWonderAction) -> Unit
+    onAction: (OneRoundWonderAction) -> Unit,
 ) {
     val canDrawing = !state.isPreviewVisible
 
@@ -99,6 +104,25 @@ private fun OneRoundWonderScreen(
             .background(Color(0xFFFEFAF6))
             .systemBarsPadding()
     ) { padding ->
+        // TODO: move loading drawings to more proper place
+        var allPathData = mutableListOf<PathData>()
+        var viewport: VectorXmlParser.ViewportSize? = null
+
+//        listOf(Drawings.entries.first { it == Drawings.HOTAIRBALLOON }).forEach {
+        listOf(Drawings.entries.random()).forEach {
+            println(it.name)
+            val drawable = getDrawableRawIdForDrawing(it)
+
+            val pathData = VectorXmlParser.loadPathsFromRawXml(LocalContext.current, drawable)
+            val drawingViewport = VectorXmlParser.getViewportSize(context = LocalContext.current, xmlResourceId = drawable)
+            viewport = VectorXmlParser.ViewportSize(
+                drawingViewport?.height ?: 0f,
+                drawingViewport?.width ?: 0f
+            )
+            pathData.let { allPathData.addAll(pathData) }
+
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -119,18 +143,19 @@ private fun OneRoundWonderScreen(
                 )
                 Spacer(modifier = Modifier.height(32.dp))
                 ScribbleDashDrawingArea(
-                    currentPath = state.currentPath,
-                    paths = state.paths,
+                    currentPath = null,
+                    paths = allPathData,
                     onAction = onAction,
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
-                    canDrawing = canDrawing
+                    canDrawing = canDrawing,
+                    width = viewport!!.width,
+                    height = viewport!!.height
                 )
-                Spacer(modifier = Modifier.height(192.dp))
+                Spacer(modifier = Modifier.height(180.dp))
                 CountdownText(state.remainingTime)
-            }
-            else {
+            } else {
                 ScribbleDashScreenTitle(
                     headline = {
                         Text(
@@ -150,7 +175,9 @@ private fun OneRoundWonderScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
-                    canDrawing = canDrawing
+                    canDrawing = canDrawing,
+                    width = viewport!!.width,
+                    height = viewport!!.height
                 )
                 Spacer(modifier = Modifier.height(192.dp))
                 Row(
