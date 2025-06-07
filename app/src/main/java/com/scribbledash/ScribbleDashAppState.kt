@@ -45,6 +45,7 @@ class ScribbleDashAppState(
             when (topLevelDestination) {
                 HOME -> navController.navigateToHome(topLevelNavOptions)
                 STATISTIC -> navController.navigateToStatistic(topLevelNavOptions)
+                SHOP -> {}
             }
         }
     }
