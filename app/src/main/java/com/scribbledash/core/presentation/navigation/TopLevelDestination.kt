@@ -28,9 +28,9 @@ enum class TopLevelDestination(
     ),
     SHOP(
         destination = HomeScreen,
-        selectedIcon = R.drawable.ic_home,
-        unselectedIcon = R.drawable.ic_home,
-        selectedColor = Color(0xFF238CFF),
+        selectedIcon = R.drawable.ic_shop,
+        unselectedIcon = R.drawable.ic_shop,
+        selectedColor = Color(0xFFAB5CFA),
         unselectedColor = Color(0xFFE1D5CA)
     )
 }
