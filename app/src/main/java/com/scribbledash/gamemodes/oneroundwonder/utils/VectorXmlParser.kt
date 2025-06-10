@@ -5,15 +5,16 @@ import android.util.Xml
 import androidx.annotation.RawRes
 import androidx.compose.ui.geometry.Offset
 import androidx.core.graphics.PathParser
-import com.scribbledash.gamemodes.oneroundwonder.model.PathData
+import com.scribbledash.gamemodes.oneroundwonder.model.ScribbleDashPath
+import com.scribbledash.gamemodes.oneroundwonder.model.computeBounds
 import org.xmlpull.v1.XmlPullParser
 
 object VectorXmlParser {
 
     data class ViewportSize(val width: Float, val height: Float)
 
-    fun loadPathsFromRawXml(context: Context, @RawRes resId: Int): List<PathData> {
-        val paths = mutableListOf<PathData>()
+    fun loadPathsFromRawXml(context: Context, @RawRes resId: Int): List<ScribbleDashPath> {
+        val paths = mutableListOf<ScribbleDashPath>()
         val inputStream = context.resources.openRawResource(resId)
 
         val parser = Xml.newPullParser()
@@ -23,9 +24,9 @@ object VectorXmlParser {
             if (parser.eventType == XmlPullParser.START_TAG && parser.name == "path") {
                 val pathData = parser.getAttributeValue(null, "pathData")
                 if (!pathData.isNullOrBlank()) {
-                    val androidPath = PathParser.createPathFromPathData(pathData)
-                    val sampled = samplePathToOffsets(androidPath, precision = 1f)
-                    paths.add(PathData(sampled))
+                    val path = PathParser.createPathFromPathData(pathData)
+                    val bounds = path.computeBounds()
+                    paths.add(ScribbleDashPath(path = path, bounds = bounds))
                 }
             }
             parser.next()
