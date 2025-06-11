@@ -1,27 +1,40 @@
 package com.scribbledash.gamemodes.oneroundwonder
 
+import android.content.Context
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.scribbledash.core.domain.model.Drawings
+import com.scribbledash.core.presentation.utils.getDrawableRawIdForDrawing
 import com.scribbledash.gamemodes.oneroundwonder.model.PathData
+import com.scribbledash.gamemodes.oneroundwonder.model.ScribbleDashPath
+import com.scribbledash.gamemodes.oneroundwonder.utils.VectorXmlParser
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class OneRoundWonderViewModel(): ViewModel() {
+class OneRoundWonderViewModel(private val vectorXmlParser: VectorXmlParser): ViewModel() {
 
     private val _state = MutableStateFlow(OneRoundWonderState())
     val state = _state
+        .onStart {
+            loadDrawings()
+        }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000L),
             OneRoundWonderState(),
         )
+
+    private val _drawings = MutableStateFlow<List<ScribbleDashPath>>(emptyList())
+    val drawings: StateFlow<List<ScribbleDashPath>> = _drawings
 
     private val eventChannel = Channel<OneRoundWonderEvent>()
     val events = eventChannel.receiveAsFlow()
@@ -138,6 +151,16 @@ class OneRoundWonderViewModel(): ViewModel() {
                 delay(1000L)
             }
             _state.update { it.copy(isPreviewVisible = false) }
+        }
+    }
+
+    private fun loadDrawings() {
+        viewModelScope.launch {
+            val drawings = Drawings.entries.map {
+                val drawable = getDrawableRawIdForDrawing(it)
+                vectorXmlParser.loadPathsFromRawXml(drawable)
+            }
+            _drawings.value = drawings
         }
     }
 }
