@@ -1,7 +1,7 @@
 package com.scribbledash.gamemodes.oneroundwonder.components
 
 import android.graphics.Matrix
-import android.graphics.RectF
+import android.graphics.Path
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,9 +20,9 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.AndroidPath
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
@@ -31,21 +31,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import com.scribbledash.gamemodes.oneroundwonder.OneRoundWonderAction
 import com.scribbledash.gamemodes.oneroundwonder.model.PathData
+import com.scribbledash.gamemodes.oneroundwonder.model.ScribbleDashPath
 import com.scribbledash.ui.theme.ScribbleDashTheme
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.roundToInt
+import androidx.compose.ui.graphics.Path as ComposePath
 
 @Composable
 fun ScribbleDashDrawingArea(
     currentPath: PathData?,
     paths: List<PathData>,
+    exampleDrawing: ScribbleDashPath?,
     onAction: (OneRoundWonderAction) -> Unit,
     modifier: Modifier = Modifier,
     strokeColor: Color = Color.Black,
-    canDrawing: Boolean = true,
-    width: Float = 0f,
-    height: Float = 0f
+    canDrawing: Boolean = true
 ) {
     Box(
         modifier = modifier
@@ -144,34 +145,31 @@ fun ScribbleDashDrawingArea(
                         )
                     }
                 } else {
-                    val totalBounds = computeTotalBounds(paths)
-
-                    val drawingWidth = totalBounds.width()
-                    val drawingHeight = totalBounds.height()
+                    val drawingWidth = exampleDrawing!!.bounds.width()
+                    val drawingHeight = exampleDrawing.bounds.height()
 
                     val scaleFactor = min(
-                        size.width / width,
-                        size.height / height
+                        size.width * .8f / drawingWidth,
+                        size.height * .8f / drawingHeight
                     )
 
                     val translateX = (size.width - drawingWidth * scaleFactor) / 2f
                     val translateY = (size.height - drawingHeight * scaleFactor) / 2f
 
                     val matrix = Matrix().apply {
-                        postTranslate(-totalBounds.left, -totalBounds.top)
+                        postTranslate(-exampleDrawing.bounds.left, -exampleDrawing.bounds.top)
                         postScale(scaleFactor, scaleFactor)
                         postTranslate(translateX, translateY)
-
                     }
 
-                    paths.fastForEach { pathData ->
-                        val transformed = pathData.path.transformOffsets(matrix)
-                        drawPath(
-                            path = transformed,
-                            color = strokeColor,
-                            smoothness = 1
-                        )
-                    }
+                    val transformedAndroidPath = Path(exampleDrawing.path)
+                    transformedAndroidPath.transform(matrix)
+
+                    drawPath(
+                        path = transformedAndroidPath.asComposePath(),
+                        color = Color.Black,
+                        style = Stroke(width = 10f)
+                    )
                 }
             }
         }
@@ -185,6 +183,7 @@ fun ScribbleDashDrawingAreaPreview() {
         ScribbleDashDrawingArea(
             currentPath = null,
             paths = emptyList(),
+            exampleDrawing = null,
             onAction = {},
             modifier = Modifier
                 .height(360.dp)
@@ -199,7 +198,7 @@ private fun DrawScope.drawPath(
     smoothness: Int = 5,
     thickness: Float = 10f
 ) {
-    val smoothedPath = Path().apply {
+    val smoothedPath = ComposePath().apply {
         if(path.isNotEmpty()) {
             moveTo(path.first().x, path.first().y)
 
@@ -233,31 +232,3 @@ private fun DrawScope.drawPath(
 fun AndroidPath.asComposePath(): Path {
     return this.asComposePath()
 }
-
-fun List<Offset>.transformOffsets(matrix: Matrix): List<Offset> {
-    return map {
-        val pts = floatArrayOf(it.x, it.y)
-        matrix.mapPoints(pts)
-        Offset(pts[0], pts[1])
-    }
-}
-
-fun computeTotalBounds(paths: List<PathData>): RectF {
-    val totalBounds = RectF()
-
-    for (pathData in paths) {
-        val offsets = pathData.path
-        if (offsets.isEmpty()) continue
-
-        val minX = offsets.minOf { it.x }
-        val maxX = offsets.maxOf { it.x }
-        val minY = offsets.minOf { it.y }
-        val maxY = offsets.maxOf { it.y }
-
-        val rect = RectF(minX, minY, maxX, maxY)
-        totalBounds.union(rect)
-    }
-
-    return totalBounds
-}
-
