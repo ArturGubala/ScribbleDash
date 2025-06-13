@@ -1,6 +1,5 @@
 package com.scribbledash.gamemodes.oneroundwonder
 
-import android.content.Context
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -161,6 +160,12 @@ class OneRoundWonderViewModel(private val vectorXmlParser: VectorXmlParser): Vie
                 vectorXmlParser.loadPathsFromRawXml(drawable)
             }
             _drawings.value = drawings
+            _state.update {
+                it.copy(
+                    drawings = drawings,
+                    previewDrawing = drawings.random()
+                )
+            }
         }
     }
 }
