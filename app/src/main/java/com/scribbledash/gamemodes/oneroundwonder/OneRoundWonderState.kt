@@ -1,6 +1,7 @@
 package com.scribbledash.gamemodes.oneroundwonder
 
 import com.scribbledash.gamemodes.oneroundwonder.model.PathData
+import com.scribbledash.gamemodes.oneroundwonder.model.ScribbleDashPath
 import kotlin.collections.isNotEmpty
 
 data class OneRoundWonderState (
@@ -9,7 +10,9 @@ data class OneRoundWonderState (
     val undoPaths: ArrayDeque<PathData> = ArrayDeque(),
     val redoPaths: ArrayDeque<PathData> = ArrayDeque(),
     val isPreviewVisible: Boolean = false,
-    val remainingTime: Int = 0
+    val remainingTime: Int = 0,
+    val drawings: List<ScribbleDashPath> = emptyList(),
+    val previewDrawing: ScribbleDashPath? = null
 ) {
     val isClearCanvasButtonActive: Boolean
         get() = paths.isNotEmpty()
