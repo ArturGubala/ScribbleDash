@@ -1,13 +1,13 @@
-package com.scribbledash.gamemodes.oneroundwonder
+package com.scribbledash.gameplay
 
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.scribbledash.core.domain.model.Drawings
 import com.scribbledash.core.presentation.utils.getDrawableRawIdForDrawing
-import com.scribbledash.gamemodes.oneroundwonder.model.PathData
-import com.scribbledash.gamemodes.oneroundwonder.model.ScribbleDashPath
-import com.scribbledash.gamemodes.oneroundwonder.utils.VectorXmlParser
+import com.scribbledash.gameplay.model.PathData
+import com.scribbledash.gameplay.model.ScribbleDashPath
+import com.scribbledash.gameplay.utils.VectorXmlParser
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,9 +19,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class OneRoundWonderViewModel(private val vectorXmlParser: VectorXmlParser): ViewModel() {
+class GameplayViewModel(private val vectorXmlParser: VectorXmlParser): ViewModel() {
 
-    private val _state = MutableStateFlow(OneRoundWonderState())
+    private val _state = MutableStateFlow(GameplayState())
     val state = _state
         .onStart {
             loadDrawings()
@@ -29,31 +29,31 @@ class OneRoundWonderViewModel(private val vectorXmlParser: VectorXmlParser): Vie
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000L),
-            OneRoundWonderState(),
+            GameplayState(),
         )
 
     private val _drawings = MutableStateFlow<List<ScribbleDashPath>>(emptyList())
     val drawings: StateFlow<List<ScribbleDashPath>> = _drawings
 
-    private val eventChannel = Channel<OneRoundWonderEvent>()
+    private val eventChannel = Channel<GameplayEvent>()
     val events = eventChannel.receiveAsFlow()
 
-    fun onAction(action: OneRoundWonderAction) {
+    fun onAction(action: GameplayAction) {
         when(action) {
-            OneRoundWonderAction.OnBackClicked -> onBackClicked()
-            OneRoundWonderAction.OnStartDrawing -> onStartDrawing()
-            is OneRoundWonderAction.OnDrawing -> onDrawing(action.offset)
-            OneRoundWonderAction.OnStopDrawing -> onStopDrawing()
-            OneRoundWonderAction.OnUndoClick -> onUndoClick()
-            OneRoundWonderAction.OnRedoClick -> onRedoClick()
-            OneRoundWonderAction.OnClearCanvasClick -> onClearCanvasClick()
-            OneRoundWonderAction.ShowPreview -> showPreview()
+            GameplayAction.OnBackClicked -> onBackClicked()
+            GameplayAction.OnStartDrawing -> onStartDrawing()
+            is GameplayAction.OnDrawing -> onDrawing(action.offset)
+            GameplayAction.OnStopDrawing -> onStopDrawing()
+            GameplayAction.OnUndoClick -> onUndoClick()
+            GameplayAction.OnRedoClick -> onRedoClick()
+            GameplayAction.OnClearCanvasClick -> onClearCanvasClick()
+            GameplayAction.ShowPreview -> showPreview()
         }
     }
 
     private fun onBackClicked() {
         viewModelScope.launch {
-            eventChannel.send(OneRoundWonderEvent.NavigateBackToHome)
+            eventChannel.send(GameplayEvent.NavigateBackToHome)
         }
     }
 

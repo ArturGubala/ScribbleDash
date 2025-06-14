@@ -16,7 +16,7 @@ import com.scribbledash.core.presentation.navigation.ScribbleDashNavHost
 import com.scribbledash.core.presentation.navigation.ScribbleDashNavigation
 import com.scribbledash.core.presentation.navigation.isTopLevelDestinationInHierarchy
 import com.scribbledash.core.presentation.screens.difficultylevel.di.difficultyLevelViewModel
-import com.scribbledash.gamemodes.oneroundwonder.di.oneRoundWonderViewModelModule
+import com.scribbledash.gameplay.di.gameplayViewModelModule
 import com.scribbledash.home.di.homeViewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -30,7 +30,7 @@ class ScribbleDashCore: Application() {
             androidContext(this@ScribbleDashCore)
             modules(
                 homeViewModelModule,
-                oneRoundWonderViewModelModule,
+                gameplayViewModelModule,
                 difficultyLevelViewModel
             )
         }

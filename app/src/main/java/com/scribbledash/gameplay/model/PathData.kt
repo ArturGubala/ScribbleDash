@@ -1,4 +1,4 @@
-package com.scribbledash.gamemodes.oneroundwonder.model
+package com.scribbledash.gameplay.model
 
 import androidx.compose.ui.geometry.Offset
 

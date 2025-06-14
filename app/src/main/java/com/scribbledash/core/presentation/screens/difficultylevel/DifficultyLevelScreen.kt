@@ -33,7 +33,7 @@ import com.scribbledash.core.presentation.components.ScribbleDashTopAppBar
 import com.scribbledash.core.presentation.utils.GameModeTypeUiModel
 import com.scribbledash.core.presentation.utils.ObserveAsEvents
 import com.scribbledash.core.presentation.utils.toGameModeTypeUiModel
-import com.scribbledash.gamemodes.oneroundwonder.navigation.navigateToOneRoundWonder
+import com.scribbledash.gameplay.navigation.navigateToGameplay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -48,7 +48,7 @@ fun DifficultyLevelRoute(
             is DifficultyLevelEvent.NavigateToDestination -> {
                 when (finalDestination.toGameModeTypeUiModel()) {
                     is GameModeTypeUiModel.OneRoundWonder -> {
-                        navController.navigateToOneRoundWonder()
+                        navController.navigateToGameplay()
                     }
                 }
             }

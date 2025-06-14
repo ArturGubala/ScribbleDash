@@ -1,4 +1,4 @@
-package com.scribbledash.gamemodes.oneroundwonder.utils
+package com.scribbledash.gameplay.utils
 
 import android.content.Context
 import android.graphics.Path
@@ -6,8 +6,8 @@ import android.graphics.RectF
 import android.util.Xml
 import androidx.annotation.RawRes
 import androidx.core.graphics.PathParser
-import com.scribbledash.gamemodes.oneroundwonder.model.ScribbleDashPath
-import com.scribbledash.gamemodes.oneroundwonder.model.computeBounds
+import com.scribbledash.gameplay.model.ScribbleDashPath
+import com.scribbledash.gameplay.model.computeBounds
 import org.xmlpull.v1.XmlPullParser
 
 class VectorXmlParser(private val context: Context) {

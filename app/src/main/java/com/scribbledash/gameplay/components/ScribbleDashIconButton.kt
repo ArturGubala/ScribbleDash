@@ -1,4 +1,4 @@
-package com.scribbledash.gamemodes.oneroundwonder.components
+package com.scribbledash.gameplay.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background

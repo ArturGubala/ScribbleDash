@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import com.scribbledash.ScribbleDashAppState
 import com.scribbledash.core.presentation.screens.difficultylevel.navigation.difficultyLevelScreen
-import com.scribbledash.gamemodes.oneroundwonder.navigation.oneRoundWonderScreen
+import com.scribbledash.gameplay.navigation.gameplayScreen
 import com.scribbledash.home.navigation.HomeScreen
 import com.scribbledash.home.navigation.homeScreen
 import com.scribbledash.statistic.navigation.statisticScreen
@@ -28,6 +28,6 @@ fun ScribbleDashNavHost(
             navController = navController,
             onBackClick = { navController.popBackStack() }
         )
-        oneRoundWonderScreen( navController = navController)
+        gameplayScreen( navController = navController)
     }
 }

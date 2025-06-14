@@ -3,7 +3,7 @@ package com.scribbledash.core.presentation.utils
 import androidx.compose.runtime.Stable
 import com.scribbledash.core.domain.model.GameModeType.OneRoundWonder
 import com.scribbledash.core.presentation.navigation.Route
-import com.scribbledash.gamemodes.oneroundwonder.navigation.OneRoundWonderScreen
+import com.scribbledash.gameplay.navigation.GameplayScreen
 
 @Stable
 sealed class GameModeTypeUiModel(
@@ -11,7 +11,7 @@ sealed class GameModeTypeUiModel(
 ) {
 
     data object OneRoundWonder : GameModeTypeUiModel(
-        route = OneRoundWonderScreen
+        route = GameplayScreen
     )
 }
 

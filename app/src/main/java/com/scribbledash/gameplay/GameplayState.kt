@@ -1,10 +1,10 @@
-package com.scribbledash.gamemodes.oneroundwonder
+package com.scribbledash.gameplay
 
-import com.scribbledash.gamemodes.oneroundwonder.model.PathData
-import com.scribbledash.gamemodes.oneroundwonder.model.ScribbleDashPath
+import com.scribbledash.gameplay.model.PathData
+import com.scribbledash.gameplay.model.ScribbleDashPath
 import kotlin.collections.isNotEmpty
 
-data class OneRoundWonderState (
+data class GameplayState (
     val currentPath: PathData? = null,
     val paths: List<PathData> = emptyList(),
     val undoPaths: ArrayDeque<PathData> = ArrayDeque(),

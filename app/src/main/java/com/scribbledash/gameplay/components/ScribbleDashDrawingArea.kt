@@ -1,6 +1,5 @@
-package com.scribbledash.gamemodes.oneroundwonder.components
+package com.scribbledash.gameplay.components
 
-import android.graphics.Matrix
 import android.graphics.Path
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -29,12 +28,12 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import com.scribbledash.gamemodes.oneroundwonder.OneRoundWonderAction
-import com.scribbledash.gamemodes.oneroundwonder.model.PathData
-import com.scribbledash.gamemodes.oneroundwonder.model.ScribbleDashPath
+import com.scribbledash.gameplay.GameplayAction
+import com.scribbledash.gameplay.model.PathData
+import com.scribbledash.gameplay.model.ScribbleDashPath
+import com.scribbledash.gameplay.model.adjustToCanvas
 import com.scribbledash.ui.theme.ScribbleDashTheme
 import kotlin.math.abs
-import kotlin.math.min
 import kotlin.math.roundToInt
 import androidx.compose.ui.graphics.Path as ComposePath
 
@@ -43,7 +42,7 @@ fun ScribbleDashDrawingArea(
     currentPath: PathData?,
     paths: List<PathData>,
     exampleDrawing: ScribbleDashPath?,
-    onAction: (OneRoundWonderAction) -> Unit,
+    onAction: (GameplayAction) -> Unit,
     modifier: Modifier = Modifier,
     strokeColor: Color = Color.Black,
     canDrawing: Boolean = true
@@ -115,16 +114,16 @@ fun ScribbleDashDrawingArea(
                             it.pointerInput(true) {
                                 detectDragGestures(
                                     onDragStart = {
-                                        onAction(OneRoundWonderAction.OnStartDrawing)
+                                        onAction(GameplayAction.OnStartDrawing)
                                     },
                                     onDragEnd = {
-                                        onAction(OneRoundWonderAction.OnStopDrawing)
+                                        onAction(GameplayAction.OnStopDrawing)
                                     },
                                     onDrag = { change, _ ->
-                                        onAction(OneRoundWonderAction.OnDrawing(change.position))
+                                        onAction(GameplayAction.OnDrawing(change.position))
                                     },
                                     onDragCancel = {
-                                        onAction(OneRoundWonderAction.OnStopDrawing)
+                                        onAction(GameplayAction.OnStopDrawing)
                                     },
                                 )
                             }
@@ -145,28 +144,10 @@ fun ScribbleDashDrawingArea(
                         )
                     }
                 } else {
-                    val drawingWidth = exampleDrawing!!.bounds.width()
-                    val drawingHeight = exampleDrawing.bounds.height()
-
-                    val scaleFactor = min(
-                        size.width * .8f / drawingWidth,
-                        size.height * .8f / drawingHeight
-                    )
-
-                    val translateX = (size.width - drawingWidth * scaleFactor) / 2f
-                    val translateY = (size.height - drawingHeight * scaleFactor) / 2f
-
-                    val matrix = Matrix().apply {
-                        postTranslate(-exampleDrawing.bounds.left, -exampleDrawing.bounds.top)
-                        postScale(scaleFactor, scaleFactor)
-                        postTranslate(translateX, translateY)
-                    }
-
-                    val transformedAndroidPath = Path(exampleDrawing.path)
-                    transformedAndroidPath.transform(matrix)
-
                     drawPath(
-                        path = transformedAndroidPath.asComposePath(),
+                        path = exampleDrawing!!.path
+                            .adjustToCanvas(canvasSize = size, bounds = exampleDrawing.bounds)
+                            .asComposePath(),
                         color = Color.Black,
                         style = Stroke(width = 10f)
                     )
