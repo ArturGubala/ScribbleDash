@@ -58,7 +58,7 @@ fun Path.adjustToCanvas(canvasSize: Size, bounds: RectF): Path {
     return this
 }
 
-fun Path.normalizeForComparision(canvasSize: Size, bounds: RectF): Path {
+fun Path.normalizeForComparison(canvasSize: Size, bounds: RectF): Path {
     val scaleX = (canvasSize.width * (1 - 2 * .1f)) / bounds.width()
     val scaleY = (canvasSize.width * (1 - 2 * .1f)) / bounds.height()
     val scale = min(scaleX, scaleY)
