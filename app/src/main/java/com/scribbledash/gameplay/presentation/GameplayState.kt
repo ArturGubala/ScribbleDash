@@ -1,4 +1,4 @@
-package com.scribbledash.gameplay
+package com.scribbledash.gameplay.presentation
 
 import com.scribbledash.gameplay.model.PathData
 import com.scribbledash.gameplay.model.ScribbleDashPath
@@ -12,7 +12,8 @@ data class GameplayState (
     val isPreviewVisible: Boolean = false,
     val remainingTime: Int = 0,
     val drawings: List<ScribbleDashPath> = emptyList(),
-    val previewDrawing: ScribbleDashPath? = null
+    val previewDrawing: ScribbleDashPath? = null,
+    val score: Int = 0
 ) {
     val isClearCanvasButtonActive: Boolean
         get() = paths.isNotEmpty()

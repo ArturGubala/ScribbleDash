@@ -28,7 +28,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import com.scribbledash.gameplay.GameplayAction
+import com.scribbledash.gameplay.presentation.GameplayAction
 import com.scribbledash.gameplay.model.PathData
 import com.scribbledash.gameplay.model.ScribbleDashPath
 import com.scribbledash.gameplay.model.adjustToCanvas

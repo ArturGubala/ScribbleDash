@@ -1,4 +1,4 @@
-package com.scribbledash.gameplay
+package com.scribbledash.gameplay.presentation
 
 interface GameplayEvent {
     object NavigateBackToHome : GameplayEvent
