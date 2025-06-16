@@ -5,7 +5,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.scribbledash.core.presentation.navigation.Route
-import com.scribbledash.gameplay.GameplayRoute
+import com.scribbledash.gameplay.presentation.screens.GameplayRoute
+import com.scribbledash.gameplay.presentation.screens.ResultRoute
 import kotlinx.serialization.Serializable
 
 fun NavController.navigateToGameplay(navOptions: NavOptions? = null) =
@@ -19,5 +20,19 @@ fun NavGraphBuilder.gameplayScreen(
     }
 }
 
+fun NavController.navigateToResult(navOptions: NavOptions? = null) =
+    navigate(ResultScreen, navOptions = navOptions)
+
+fun NavGraphBuilder.resultScreen(
+    navController: NavController
+) {
+    composable<ResultScreen> {
+        ResultRoute(navController = navController)
+    }
+}
+
 @Serializable
 object GameplayScreen : Route
+
+@Serializable
+object ResultScreen : Route

@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import com.scribbledash.ScribbleDashAppState
 import com.scribbledash.core.presentation.screens.difficultylevel.navigation.difficultyLevelScreen
 import com.scribbledash.gameplay.navigation.gameplayScreen
+import com.scribbledash.gameplay.navigation.resultScreen
 import com.scribbledash.home.navigation.HomeScreen
 import com.scribbledash.home.navigation.homeScreen
 import com.scribbledash.statistic.navigation.statisticScreen
@@ -29,5 +30,6 @@ fun ScribbleDashNavHost(
             onBackClick = { navController.popBackStack() }
         )
         gameplayScreen( navController = navController)
+        resultScreen( navController = navController)
     }
 }
