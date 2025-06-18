@@ -9,6 +9,6 @@ interface GameplayAction {
     data object OnStopDrawing: GameplayAction
     data object OnUndoClick: GameplayAction
     data object OnRedoClick: GameplayAction
-    data object OnClearCanvasClick: GameplayAction
+    data object OnDoneClick: GameplayAction
     data object ShowPreview: GameplayAction
 }
