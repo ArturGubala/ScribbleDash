@@ -37,6 +37,8 @@ fun Path.computeBounds(precision: Float = 0.5f): RectF {
 }
 
 fun Path.adjustToCanvas(canvasSize: Size, bounds: RectF): Path {
+    val newPath = Path(this)
+
     val drawingWidth = bounds.width()
     val drawingHeight = bounds.height()
 
@@ -54,11 +56,13 @@ fun Path.adjustToCanvas(canvasSize: Size, bounds: RectF): Path {
         postTranslate(translateX, translateY)
     }
 
-    this.transform(matrix)
-    return this
+    newPath.transform(matrix)
+    return newPath
 }
 
 fun Path.normalizeForComparison(canvasSize: Size, bounds: RectF): Path {
+    val newPath = Path(this)
+
     val scaleX = (canvasSize.width * (1 - 2 * .1f)) / bounds.width()
     val scaleY = (canvasSize.width * (1 - 2 * .1f)) / bounds.height()
     val scale = min(scaleX, scaleY)
@@ -75,18 +79,21 @@ fun Path.normalizeForComparison(canvasSize: Size, bounds: RectF): Path {
         postTranslate(tx, ty)
     }
 
-    this.transform(matrix)
-    return this
+    newPath.transform(matrix)
+    return newPath
 }
 
-fun Path.toBitmap(canvasSize: IntSize = IntSize(500, 500)): Bitmap {
+fun Path.toBitmap(
+    canvasSize: IntSize = IntSize(500, 500),
+    stroke: Float = 10f
+): Bitmap {
     val bitmap = createBitmap(canvasSize.width, canvasSize.height)
     val canvas = Canvas(bitmap)
     val paint = Paint().apply {
-        color = android.graphics.Color.WHITE
+        color = android.graphics.Color.YELLOW
         style = Paint.Style.STROKE
         isAntiAlias = true
-        strokeWidth = 10f
+        strokeWidth = stroke
     }
 
     canvas.drawPath(this, paint)
