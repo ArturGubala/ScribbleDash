@@ -13,7 +13,7 @@ data class GameplayState (
     val remainingTime: Int = 0,
     val drawings: List<ScribbleDashPath> = emptyList(),
     val previewDrawing: ScribbleDashPath? = null,
-    val score: Int = 0
+    val score: Float = 0f
 ) {
     val isClearCanvasButtonActive: Boolean
         get() = paths.isNotEmpty()
