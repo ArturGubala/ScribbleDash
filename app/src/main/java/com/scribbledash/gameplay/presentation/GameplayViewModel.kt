@@ -1,12 +1,20 @@
 package com.scribbledash.gameplay.presentation
 
+import android.graphics.Path
+import android.util.Log
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.scribbledash.core.domain.model.Drawings
 import com.scribbledash.core.presentation.utils.getDrawableRawIdForDrawing
 import com.scribbledash.gameplay.model.PathData
 import com.scribbledash.gameplay.model.ScribbleDashPath
+import com.scribbledash.gameplay.model.calculatePathLength
+import com.scribbledash.gameplay.model.computeBounds
+import com.scribbledash.gameplay.model.normalizeForComparison
+import com.scribbledash.gameplay.model.toBitmap
+import com.scribbledash.gameplay.utils.BitmapExtensions
 import com.scribbledash.gameplay.utils.VectorXmlParser
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -19,7 +27,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class GameplayViewModel(private val vectorXmlParser: VectorXmlParser): ViewModel() {
+class GameplayViewModel(
+    private val vectorXmlParser: VectorXmlParser,
+    private val bitmapExtensions: BitmapExtensions
+): ViewModel() {
 
     private val _state = MutableStateFlow(GameplayState())
     val state = _state
@@ -46,7 +57,7 @@ class GameplayViewModel(private val vectorXmlParser: VectorXmlParser): ViewModel
             GameplayAction.OnStopDrawing -> onStopDrawing()
             GameplayAction.OnUndoClick -> onUndoClick()
             GameplayAction.OnRedoClick -> onRedoClick()
-            GameplayAction.OnClearCanvasClick -> onClearCanvasClick()
+            GameplayAction.OnDoneClick -> compareDrawings()
             GameplayAction.ShowPreview -> showPreview()
         }
     }
@@ -167,5 +178,63 @@ class GameplayViewModel(private val vectorXmlParser: VectorXmlParser): ViewModel
                 )
             }
         }
+    }
+
+    private fun compareDrawings() {
+        val previewDrawing = ScribbleDashPath(
+            path = Path(_state.value.previewDrawing!!.path),
+            bounds = _state.value.previewDrawing!!.bounds
+        )
+
+        val userDrawing = toAndroidPath(_state.value.paths)
+        val normalizedUserDrawing = userDrawing
+            .normalizeForComparison(Size(500f, 500f), userDrawing.computeBounds())
+        val normalizedReferenceDrawing = previewDrawing.path
+            .normalizeForComparison(Size(500f, 500f), previewDrawing.bounds)
+
+        var userBitmap = normalizedUserDrawing.toBitmap(stroke = 20f)
+        var referenceBitmap = normalizedReferenceDrawing.toBitmap()
+
+        val comparisonResult = bitmapExtensions.compareBitmaps(
+            drawing = userBitmap,
+            reference = referenceBitmap
+        )
+
+        val userDrawingLength = userDrawing.calculatePathLength()
+        val referenceDrawingLength = previewDrawing.path.calculatePathLength()
+        val lengthRatio = userDrawingLength / referenceDrawingLength
+
+        val lengthPenalty = if (lengthRatio < 0.7f) {
+            (0.7f - lengthRatio)
+        } else 0f
+
+        val rawScore = comparisonResult - lengthPenalty
+        _state.update {
+            it.copy(
+                score = rawScore.coerceIn(0f, 100f)
+            )
+        }
+
+        Log.d("RESULT", "Score: ${"%.1f".format(_state.value.score)}%")
+        viewModelScope.launch {
+            eventChannel.send(GameplayEvent.NavigateToResult)
+        }
+    }
+
+    private fun toAndroidPath(pathDataList: List<PathData>): Path {
+        val path = Path()
+
+        for (pathData in pathDataList) {
+            val offsets = pathData.path
+            if (offsets.isNotEmpty()) {
+                path.moveTo(offsets.first().x, offsets.first().y)
+                for (i in 1 until offsets.size) {
+                    val current = offsets[i]
+                    path.lineTo(current.x, current.y)
+                }
+            }
+        }
+
+        return path
     }
 }
