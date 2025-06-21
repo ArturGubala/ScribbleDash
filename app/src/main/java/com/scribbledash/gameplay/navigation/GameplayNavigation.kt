@@ -4,10 +4,21 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import com.scribbledash.core.presentation.navigation.Route
 import com.scribbledash.gameplay.presentation.screens.GameplayRoute
 import com.scribbledash.gameplay.presentation.screens.ResultRoute
 import kotlinx.serialization.Serializable
+
+fun NavGraphBuilder.gameplayNavGraph(navController: NavController) {
+    navigation(
+        startDestination = GameplayScreen.serializer().toString(),
+        route = "gameplay_root"
+    ) {
+        gameplayScreen(navController)
+        resultScreen(navController)
+    }
+}
 
 fun NavController.navigateToGameplay(navOptions: NavOptions? = null) =
     navigate(GameplayScreen, navOptions = navOptions)
