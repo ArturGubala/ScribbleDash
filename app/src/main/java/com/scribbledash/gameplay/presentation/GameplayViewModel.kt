@@ -13,6 +13,7 @@ import com.scribbledash.gameplay.model.ScribbleDashPath
 import com.scribbledash.gameplay.model.calculatePathLength
 import com.scribbledash.gameplay.model.computeBounds
 import com.scribbledash.gameplay.model.normalizeForComparison
+import com.scribbledash.gameplay.model.toAndroidPath
 import com.scribbledash.gameplay.model.toBitmap
 import com.scribbledash.gameplay.utils.BitmapExtensions
 import com.scribbledash.gameplay.utils.VectorXmlParser
@@ -186,7 +187,7 @@ class GameplayViewModel(
             bounds = _state.value.previewDrawing!!.bounds
         )
 
-        val userDrawing = toAndroidPath(_state.value.paths)
+        val userDrawing = _state.value.paths.toAndroidPath()
         val normalizedUserDrawing = userDrawing
             .normalizeForComparison(Size(500f, 500f), userDrawing.computeBounds())
         val normalizedReferenceDrawing = previewDrawing.path
@@ -219,22 +220,5 @@ class GameplayViewModel(
         viewModelScope.launch {
             eventChannel.send(GameplayEvent.NavigateToResult)
         }
-    }
-
-    private fun toAndroidPath(pathDataList: List<PathData>): Path {
-        val path = Path()
-
-        for (pathData in pathDataList) {
-            val offsets = pathData.path
-            if (offsets.isNotEmpty()) {
-                path.moveTo(offsets.first().x, offsets.first().y)
-                for (i in 1 until offsets.size) {
-                    val current = offsets[i]
-                    path.lineTo(current.x, current.y)
-                }
-            }
-        }
-
-        return path
     }
 }
