@@ -94,5 +94,12 @@ val Typography = Typography(
         fontSize = 24.sp,
         lineHeight = 28.sp,
         color = Text
+    ),
+    displayLarge = TextStyle(
+        fontFamily = BagelFatOne,
+        fontWeight = FontWeight.Normal,
+        fontSize = 60.sp,
+        lineHeight = 80.sp,
+        color = Text
     )
 )
