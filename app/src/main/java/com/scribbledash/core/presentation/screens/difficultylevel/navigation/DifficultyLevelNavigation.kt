@@ -8,8 +8,8 @@ import androidx.navigation.toRoute
 import com.scribbledash.core.presentation.screens.difficultylevel.DifficultyLevelRoute
 import kotlinx.serialization.Serializable
 
-fun NavController.navigateToDifficultyLevel(finalDestination: String, navOptions: NavOptions? = null) {
-    navigate(DifficultyLevelScreen(finalDestination), navOptions)
+fun NavController.navigateToDifficultyLevel(navOptions: NavOptions? = null) {
+    navigate(DifficultyLevelScreen, navOptions)
 }
 
 
@@ -20,7 +20,6 @@ fun NavGraphBuilder.difficultyLevelScreen(
     composable<DifficultyLevelScreen> {
         val args = it.toRoute<DifficultyLevelScreen>()
         DifficultyLevelRoute(
-            finalDestination = args.finalDestination,
             navController = navController,
             onBackClick = onBackClick
         )
@@ -28,6 +27,4 @@ fun NavGraphBuilder.difficultyLevelScreen(
 }
 
 @Serializable
-class DifficultyLevelScreen(
-    val finalDestination: String
-)
+object DifficultyLevelScreen

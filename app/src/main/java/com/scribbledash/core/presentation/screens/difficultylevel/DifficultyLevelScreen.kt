@@ -1,5 +1,6 @@
 package com.scribbledash.core.presentation.screens.difficultylevel
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -34,36 +35,38 @@ import com.scribbledash.core.presentation.utils.GameModeTypeUiModel
 import com.scribbledash.core.presentation.utils.ObserveAsEvents
 import com.scribbledash.core.presentation.utils.toGameModeTypeUiModel
 import com.scribbledash.gameplay.navigation.navigateToGameplay
+import com.scribbledash.gameplay.presentation.GameplayAction
+import com.scribbledash.home.navigation.HomeScreen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun DifficultyLevelRoute(
-    finalDestination: String,
     navController: NavController,
     onBackClick: () -> Unit,
     viewModel: DifficultyLevelViewModel = koinViewModel()
 ) {
+    BackHandler {
+        viewModel.onAction(DifficultyLevelAction.OnBackClicked)
+    }
+
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             is DifficultyLevelEvent.NavigateToDestination -> {
-                when (finalDestination.toGameModeTypeUiModel()) {
-                    is GameModeTypeUiModel.OneRoundWonder -> {
-                        navController.navigateToGameplay()
-                    }
-                }
+                navController.navigateToGameplay()
+            }
+            is DifficultyLevelEvent.NavigateBackToHome -> {
+                navController.popBackStack(route = HomeScreen, inclusive = false)
             }
         }
     }
 
     DifficultyLevelScreen(
-        onBackClick = onBackClick,
         onAction = viewModel::onAction
     )
 }
 
 @Composable
 fun DifficultyLevelScreen(
-    onBackClick: () -> Unit,
     onAction: (DifficultyLevelAction) -> Unit
 ) {
     Scaffold(
@@ -71,7 +74,7 @@ fun DifficultyLevelScreen(
             ScribbleDashTopAppBar(
                 actions = {
                     IconButton(
-                        onClick = onBackClick
+                        onClick = { onAction(DifficultyLevelAction.OnBackClicked) }
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_round_cross),
