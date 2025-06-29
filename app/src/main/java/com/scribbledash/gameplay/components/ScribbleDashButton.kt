@@ -1,6 +1,5 @@
 package com.scribbledash.gameplay.components
 
-import androidx.annotation.ColorInt
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,11 +29,11 @@ import com.scribbledash.ui.theme.ScribbleDashTheme
 fun ScribbleDashButton(
     description: String,
     onClick: () -> Unit,
+    buttonColor: Color,
     modifier: Modifier = Modifier,
-    buttonColor: Long = 0xFFE1D5CA,
     isActive: Boolean = true
 ) {
-    val innerBoxBackgroundColor = if (isActive) Color(buttonColor) else Color(buttonColor)
+    val innerBoxBackgroundColor = buttonColor
     val textOpacity = if (isActive) 1f else .8f
 
     Box(
@@ -88,22 +87,23 @@ fun ScribbleDashButtonPreview() {
             ScribbleDashButton(
                 description = stringResource(R.string.done),
                 onClick = {},
+                buttonColor = Color(0xFF0DD280),
                 modifier = Modifier
                     .width(201.dp)
-                    .height(64.dp),
-                buttonColor = 0xFF0DD280
+                    .height(64.dp)
             )
             ScribbleDashButton(
                 description = stringResource(R.string.done),
                 onClick = {},
+                buttonColor = Color(0xFF238CFF),
                 modifier = Modifier
                     .width(201.dp)
-                    .height(64.dp),
-                buttonColor = 0xFF238CFF
+                    .height(64.dp)
             )
             ScribbleDashButton(
                 description = stringResource(R.string.done),
                 onClick = {},
+                buttonColor = Color(0xFFE1D5CA),
                 modifier = Modifier
                     .width(201.dp)
                     .height(64.dp),
