@@ -37,7 +37,7 @@ internal fun HomeRoute(
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             is HomeEvents.NavigateToDifficultyLevel -> {
-                navController.navigateToDifficultyLevel(event.finalDestination)
+                navController.navigateToDifficultyLevel()
             }
         }
     }
