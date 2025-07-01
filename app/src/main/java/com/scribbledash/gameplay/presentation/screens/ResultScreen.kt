@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -34,7 +36,9 @@ import androidx.navigation.NavController
 import com.scribbledash.R
 import com.scribbledash.core.presentation.components.ScribbleDashScreenTitle
 import com.scribbledash.core.presentation.components.ScribbleDashTopAppBar
+import com.scribbledash.core.presentation.screens.difficultylevel.navigation.navigateToDifficultyLevel
 import com.scribbledash.core.presentation.utils.ObserveAsEvents
+import com.scribbledash.gameplay.components.ScribbleDashButton
 import com.scribbledash.gameplay.components.ScribbleDashDrawingArea
 import com.scribbledash.gameplay.model.ScribbleDashPath
 import com.scribbledash.gameplay.model.computeBounds
@@ -101,6 +105,9 @@ internal fun ResultRoute(
         when (event) {
             is GameplayEvent.NavigateBackToHome -> {
                 navController.popBackStack(route = HomeScreen, inclusive = false)
+            }
+            is GameplayEvent.NavigateToDifficultyLevelScreen -> {
+                navController.navigateToDifficultyLevel()
             }
         }
     }
@@ -225,6 +232,17 @@ private fun ResultScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+            ScribbleDashButton(
+                description = stringResource(R.string.try_again),
+                onClick = { onAction(GameplayAction.OnTryAgainClick) },
+                buttonColor = Color(0xFF238CFF),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp),
+                isActive = true
             )
         }
     }

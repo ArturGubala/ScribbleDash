@@ -11,4 +11,5 @@ interface GameplayAction {
     data object OnRedoClick: GameplayAction
     data object OnDoneClick: GameplayAction
     data object ShowPreview: GameplayAction
+    data object OnTryAgainClick: GameplayAction
 }

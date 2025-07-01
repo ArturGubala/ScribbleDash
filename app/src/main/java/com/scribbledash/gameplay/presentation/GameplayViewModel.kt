@@ -60,6 +60,7 @@ class GameplayViewModel(
             GameplayAction.OnRedoClick -> onRedoClick()
             GameplayAction.OnDoneClick -> compareDrawings()
             GameplayAction.ShowPreview -> showPreview()
+            GameplayAction.OnTryAgainClick -> navigateToDifficultyLevelScreen()
         }
     }
 
@@ -219,6 +220,12 @@ class GameplayViewModel(
         Log.d("RESULT", "Score: ${"%.1f".format(_state.value.score)}%")
         viewModelScope.launch {
             eventChannel.send(GameplayEvent.NavigateToResult)
+        }
+    }
+
+    private fun navigateToDifficultyLevelScreen() {
+        viewModelScope.launch {
+            eventChannel.send(GameplayEvent.NavigateToDifficultyLevelScreen)
         }
     }
 }
