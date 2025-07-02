@@ -25,6 +25,7 @@ import com.scribbledash.core.presentation.components.ScribbleDashGameModeCard
 import com.scribbledash.core.presentation.components.ScribbleDashScreenTitle
 import com.scribbledash.core.presentation.components.ScribbleDashTopAppBar
 import com.scribbledash.core.presentation.screens.difficultylevel.navigation.navigateToDifficultyLevel
+import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.core.presentation.utils.GradientScheme
 import com.scribbledash.core.presentation.utils.ObserveAsEvents
 import org.koin.androidx.compose.koinViewModel
@@ -37,7 +38,7 @@ internal fun HomeRoute(
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             is HomeEvents.NavigateToDifficultyLevel -> {
-                navController.navigateToDifficultyLevel()
+                navController.navigateToDifficultyLevel(event.gameType)
             }
         }
     }
@@ -99,7 +100,7 @@ private fun HomeScreen(
                 description = R.string.one_round_wonder,
                 borderColor = Color(0xFF0DD280),
                 onClick = {
-                    onAction(HomeAction.OnGameModeTypeClick(GameModeType.OneRoundWonder.mode))
+                    onAction(HomeAction.OnGameModeTypeClick(GameType.ONE_ROUND_WONDER))
                 }
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -107,7 +108,9 @@ private fun HomeScreen(
                 image = R.drawable.ic_speed_draw,
                 description = R.string.speed_draw,
                 borderColor = Color(0xFF238CFF),
-                onClick = {},
+                onClick = {
+                    onAction(HomeAction.OnGameModeTypeClick(GameType.SPEED_DRAW))
+                },
                 imageVerticalAlignment = Alignment.Top
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -115,7 +118,9 @@ private fun HomeScreen(
                 image = R.drawable.ic_endless_mode,
                 description = R.string.endless_mode,
                 borderColor = Color(0xFFFA852C),
-                onClick = {}
+                onClick = {
+                    onAction(HomeAction.OnGameModeTypeClick(GameType.ENDLESS_MODE))
+                }
             )
         }
     }

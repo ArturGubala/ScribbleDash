@@ -15,7 +15,7 @@ class HomeViewModel(): ViewModel() {
         when(action) {
             is HomeAction.OnGameModeTypeClick -> {
                 viewModelScope.launch {
-                    eventChannel.send(HomeEvents.NavigateToDifficultyLevel(action.finalDestination))
+                    eventChannel.send(HomeEvents.NavigateToDifficultyLevel(gameType = action.gameType))
                 }
             }
         }
