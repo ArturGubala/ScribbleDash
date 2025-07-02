@@ -24,10 +24,7 @@ fun ScribbleDashNavHost(
     ) {
         homeScreen(navController = navController)
         statisticScreen(onBackClick = { navController.popBackStack() })
-        difficultyLevelScreen(
-            navController = navController,
-            onBackClick = { navController.popBackStack() }
-        )
+        difficultyLevelScreen(navController = navController)
         gameplayNavGraph(navController)
     }
 }
