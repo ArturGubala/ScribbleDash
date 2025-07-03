@@ -31,18 +31,16 @@ import com.scribbledash.R
 import com.scribbledash.core.presentation.components.ScribbleDashDifficultyLevelButton
 import com.scribbledash.core.presentation.components.ScribbleDashScreenTitle
 import com.scribbledash.core.presentation.components.ScribbleDashTopAppBar
-import com.scribbledash.core.presentation.utils.GameModeTypeUiModel
+import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.core.presentation.utils.ObserveAsEvents
-import com.scribbledash.core.presentation.utils.toGameModeTypeUiModel
 import com.scribbledash.gameplay.navigation.navigateToGameplay
-import com.scribbledash.gameplay.presentation.GameplayAction
 import com.scribbledash.home.navigation.HomeScreen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun DifficultyLevelRoute(
     navController: NavController,
-    onBackClick: () -> Unit,
+    gameType: GameType,
     viewModel: DifficultyLevelViewModel = koinViewModel()
 ) {
     BackHandler {
