@@ -1,5 +1,7 @@
 package com.scribbledash.gameplay.presentation
 
+import com.scribbledash.core.presentation.utils.DifficultyLevel
+import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.gameplay.model.PathData
 import com.scribbledash.gameplay.model.ScribbleDashPath
 import kotlin.collections.isNotEmpty
@@ -13,7 +15,9 @@ data class GameplayState (
     val remainingTime: Int = 0,
     val drawings: List<ScribbleDashPath> = emptyList(),
     val previewDrawing: ScribbleDashPath? = null,
-    val score: Float = 0f
+    val score: Float = 0f,
+    val gameType: GameType = GameType.ONE_ROUND_WONDER,
+    val difficultyLevel: DifficultyLevel = DifficultyLevel.BEGINNER
 ) {
     val isClearCanvasButtonActive: Boolean
         get() = paths.isNotEmpty()

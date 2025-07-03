@@ -1,6 +1,7 @@
 package com.scribbledash.gameplay.presentation
 
 import androidx.compose.ui.geometry.Offset
+import com.scribbledash.core.presentation.utils.GameType
 
 interface GameplayAction {
     data object OnBackClicked : GameplayAction
@@ -11,5 +12,5 @@ interface GameplayAction {
     data object OnRedoClick: GameplayAction
     data object OnDoneClick: GameplayAction
     data object ShowPreview: GameplayAction
-    data object OnTryAgainClick: GameplayAction
+    data class OnTryAgainClick(val gameType: GameType): GameplayAction
 }

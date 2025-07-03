@@ -7,6 +7,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.scribbledash.core.domain.model.Drawings
+import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.core.presentation.utils.getDrawableRawIdForDrawing
 import com.scribbledash.gameplay.model.PathData
 import com.scribbledash.gameplay.model.ScribbleDashPath
@@ -60,7 +61,7 @@ class GameplayViewModel(
             GameplayAction.OnRedoClick -> onRedoClick()
             GameplayAction.OnDoneClick -> compareDrawings()
             GameplayAction.ShowPreview -> showPreview()
-            GameplayAction.OnTryAgainClick -> navigateToDifficultyLevelScreen()
+            is GameplayAction.OnTryAgainClick -> navigateToDifficultyLevelScreen(gameType = action.gameType)
         }
     }
 
@@ -223,9 +224,9 @@ class GameplayViewModel(
         }
     }
 
-    private fun navigateToDifficultyLevelScreen() {
+    private fun navigateToDifficultyLevelScreen(gameType: GameType) {
         viewModelScope.launch {
-            eventChannel.send(GameplayEvent.NavigateToDifficultyLevelScreen)
+            eventChannel.send(GameplayEvent.NavigateToDifficultyLevelScreen(gameType = gameType))
         }
     }
 }
