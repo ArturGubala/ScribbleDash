@@ -107,7 +107,7 @@ internal fun ResultRoute(
                 navController.popBackStack(route = HomeScreen, inclusive = false)
             }
             is GameplayEvent.NavigateToDifficultyLevelScreen -> {
-                navController.navigateToDifficultyLevel()
+                navController.navigateToDifficultyLevel(state.gameType)
             }
         }
     }
@@ -237,7 +237,7 @@ private fun ResultScreen(
             Spacer(modifier = Modifier.weight(1f))
             ScribbleDashButton(
                 description = stringResource(R.string.try_again),
-                onClick = { onAction(GameplayAction.OnTryAgainClick) },
+                onClick = { onAction(GameplayAction.OnTryAgainClick(gameType = state.gameType)) },
                 buttonColor = Color(0xFF238CFF),
                 modifier = Modifier
                     .fillMaxWidth()
