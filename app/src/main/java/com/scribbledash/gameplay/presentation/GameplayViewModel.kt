@@ -7,6 +7,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.scribbledash.core.domain.model.Drawings
+import com.scribbledash.core.presentation.utils.DifficultyLevel
 import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.core.presentation.utils.getDrawableRawIdForDrawing
 import com.scribbledash.gameplay.model.PathData
@@ -50,6 +51,14 @@ class GameplayViewModel(
 
     private val eventChannel = Channel<GameplayEvent>()
     val events = eventChannel.receiveAsFlow()
+
+    fun setGameConfiguration(gameType: GameType, difficultyLevel: DifficultyLevel) {
+        _state.value = _state.value.copy(
+            gameType = gameType,
+            difficultyLevel = difficultyLevel
+        )
+    }
+
 
     fun onAction(action: GameplayAction) {
         when(action) {
@@ -168,6 +177,8 @@ class GameplayViewModel(
     }
 
     private fun loadDrawings() {
+        if (_drawings.value.isNotEmpty()) return
+
         viewModelScope.launch {
             val drawings = Drawings.entries.map {
                 val drawable = getDrawableRawIdForDrawing(it)
@@ -195,8 +206,14 @@ class GameplayViewModel(
         val normalizedReferenceDrawing = previewDrawing.path
             .normalizeForComparison(Size(500f, 500f), previewDrawing.bounds)
 
-        var userBitmap = normalizedUserDrawing.toBitmap(stroke = 20f)
-        var referenceBitmap = normalizedReferenceDrawing.toBitmap()
+        val difficultyMultiplier = when (_state.value.difficultyLevel) {
+            DifficultyLevel.BEGINNER -> 15f
+            DifficultyLevel.CHALLENGING -> 7f
+            DifficultyLevel.MASTER -> 4f
+        }
+
+        var userBitmap = normalizedUserDrawing.toBitmap(stroke = 3f)
+        var referenceBitmap = normalizedReferenceDrawing.toBitmap(stroke = 3f * difficultyMultiplier)
 
         val comparisonResult = bitmapExtensions.compareBitmaps(
             drawing = userBitmap,

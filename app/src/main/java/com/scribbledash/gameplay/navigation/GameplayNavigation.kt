@@ -5,7 +5,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import androidx.navigation.toRoute
 import com.scribbledash.core.presentation.navigation.Route
+import com.scribbledash.core.presentation.screens.difficultylevel.navigation.DifficultyLevelScreen
+import com.scribbledash.core.presentation.utils.DifficultyLevel
+import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.gameplay.presentation.screens.GameplayRoute
 import com.scribbledash.gameplay.presentation.screens.ResultRoute
 import kotlinx.serialization.Serializable
@@ -20,14 +24,24 @@ fun NavGraphBuilder.gameplayNavGraph(navController: NavController) {
     }
 }
 
-fun NavController.navigateToGameplay(navOptions: NavOptions? = null) =
-    navigate(GameplayScreen, navOptions = navOptions)
+fun NavController.navigateToGameplay(gameType: GameType,
+                                     difficultyLevel: DifficultyLevel,
+                                     navOptions: NavOptions? = null) =
+    navigate(GameplayScreen(
+        gameType = gameType,
+        difficultyLevel = difficultyLevel),
+        navOptions = navOptions)
 
 fun NavGraphBuilder.gameplayScreen(
     navController: NavController
 ) {
     composable<GameplayScreen> {
-        GameplayRoute(navController = navController)
+        val args = it.toRoute<GameplayScreen>()
+        GameplayRoute(
+            gameType = args.gameType,
+            difficultyLevel = args.difficultyLevel,
+            navController = navController
+        )
     }
 }
 
@@ -43,7 +57,10 @@ fun NavGraphBuilder.resultScreen(
 }
 
 @Serializable
-object GameplayScreen : Route
+data class GameplayScreen (
+    val gameType: GameType,
+    val difficultyLevel: DifficultyLevel
+) : Route
 
 @Serializable
 object ResultScreen : Route

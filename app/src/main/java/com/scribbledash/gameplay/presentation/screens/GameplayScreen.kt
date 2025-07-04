@@ -34,6 +34,8 @@ import com.scribbledash.R
 import com.scribbledash.core.presentation.components.CountdownText
 import com.scribbledash.core.presentation.components.ScribbleDashScreenTitle
 import com.scribbledash.core.presentation.components.ScribbleDashTopAppBar
+import com.scribbledash.core.presentation.utils.DifficultyLevel
+import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.core.presentation.utils.ObserveAsEvents
 import com.scribbledash.gameplay.components.ScribbleDashButton
 import com.scribbledash.gameplay.components.ScribbleDashDrawingArea
@@ -49,10 +51,16 @@ import com.scribbledash.home.navigation.HomeScreen
 @SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
 internal fun GameplayRoute(
+    gameType: GameType,
+    difficultyLevel: DifficultyLevel,
     navController: NavController
 ) {
     val viewModel: GameplayViewModel = sharedViewModel(navController, "gameplay_root")
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(gameType, difficultyLevel) {
+        viewModel.setGameConfiguration(gameType, difficultyLevel)
+    }
 
     BackHandler {
         viewModel.onAction(GameplayAction.OnBackClicked)
