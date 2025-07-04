@@ -31,6 +31,7 @@ import com.scribbledash.R
 import com.scribbledash.core.presentation.components.ScribbleDashDifficultyLevelButton
 import com.scribbledash.core.presentation.components.ScribbleDashScreenTitle
 import com.scribbledash.core.presentation.components.ScribbleDashTopAppBar
+import com.scribbledash.core.presentation.utils.DifficultyLevel
 import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.core.presentation.utils.ObserveAsEvents
 import com.scribbledash.gameplay.navigation.navigateToGameplay
@@ -49,8 +50,11 @@ fun DifficultyLevelRoute(
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            is DifficultyLevelEvent.NavigateToDestination -> {
-                navController.navigateToGameplay()
+            is DifficultyLevelEvent.NavigateToGameplay -> {
+                navController.navigateToGameplay(
+                    gameType = gameType,
+                    difficultyLevel = event.difficultyLevel
+                )
             }
             is DifficultyLevelEvent.NavigateBackToHome -> {
                 navController.popBackStack(route = HomeScreen, inclusive = false)
@@ -130,7 +134,9 @@ fun DifficultyLevelScreen(
                     },
                     description = R.string.difficulty_beginner,
                     onClick = {
-                        onAction(DifficultyLevelAction.OnDifficultyLevelClick)
+                        onAction(
+                            DifficultyLevelAction.OnDifficultyLevelClick(DifficultyLevel.BEGINNER)
+                        )
                     },
                     imageAlignment = Alignment.TopEnd
                 )
@@ -144,7 +150,9 @@ fun DifficultyLevelScreen(
                     },
                     description = R.string.difficulty_challenging,
                     onClick = {
-                        onAction(DifficultyLevelAction.OnDifficultyLevelClick)
+                        onAction(
+                            DifficultyLevelAction.OnDifficultyLevelClick(DifficultyLevel.CHALLENGING)
+                        )
                     },
                     modifier = Modifier.offset(y = (-16).dp)
                 )
@@ -157,7 +165,9 @@ fun DifficultyLevelScreen(
                     },
                     description = R.string.difficulty_master,
                     onClick = {
-                        onAction(DifficultyLevelAction.OnDifficultyLevelClick)
+                        onAction(
+                            DifficultyLevelAction.OnDifficultyLevelClick(DifficultyLevel.MASTER)
+                        )
                     }
                 )
             }
