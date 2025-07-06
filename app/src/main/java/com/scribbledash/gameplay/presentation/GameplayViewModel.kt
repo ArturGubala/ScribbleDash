@@ -18,9 +18,9 @@ import com.scribbledash.gameplay.model.normalizeForComparison
 import com.scribbledash.gameplay.model.toAndroidPath
 import com.scribbledash.gameplay.model.toBitmap
 import com.scribbledash.gameplay.utils.BitmapExtensions
+import com.scribbledash.gameplay.utils.CountdownTimer
 import com.scribbledash.gameplay.utils.VectorXmlParser
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -166,14 +166,8 @@ class GameplayViewModel(
     }
 
     private fun showPreview() {
-        viewModelScope.launch {
-            _state.update { it.copy(isPreviewVisible = true) }
-            for (second in 3 downTo 1) {
-                _state.update { it.copy(remainingTime = second) }
-                delay(1000L)
-            }
-            _state.update { it.copy(isPreviewVisible = false) }
-        }
+        _state.update { it.copy(isPreviewVisible = true) }
+        previewTimer.start(3000L)
     }
 
     private fun loadDrawings() {
@@ -246,4 +240,17 @@ class GameplayViewModel(
             eventChannel.send(GameplayEvent.NavigateToDifficultyLevelScreen(gameType = gameType))
         }
     }
+
+    private val previewTimer = CountdownTimer(
+        coroutineScope = viewModelScope,
+        onTick = { time ->
+            _state.update {
+                it.copy(
+                    remainingPreviewTime = time
+                )
+            }
+        },
+        onFinished = { _state.update { it.copy(isPreviewVisible = false) } }
+    )
+
 }
