@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.scribbledash.R
-import com.scribbledash.core.presentation.components.CountdownText
 import com.scribbledash.core.presentation.components.ScribbleDashScreenTitle
 import com.scribbledash.core.presentation.components.ScribbleDashTopAppBar
 import com.scribbledash.core.presentation.utils.DifficultyLevel
@@ -40,6 +39,7 @@ import com.scribbledash.core.presentation.utils.ObserveAsEvents
 import com.scribbledash.gameplay.components.ScribbleDashButton
 import com.scribbledash.gameplay.components.ScribbleDashDrawingArea
 import com.scribbledash.gameplay.components.ScribbleDashIconButton
+import com.scribbledash.gameplay.components.ScribbleDashPreviewCounter
 import com.scribbledash.gameplay.navigation.navigateToResult
 import com.scribbledash.gameplay.presentation.GameplayAction
 import com.scribbledash.gameplay.presentation.GameplayEvent
@@ -149,7 +149,7 @@ private fun GameplayScreen(
                     canDrawing = canDrawing
                 )
                 Spacer(modifier = Modifier.height(180.dp))
-                CountdownText(state.remainingTime)
+                ScribbleDashPreviewCounter(remainingTimeMs = state.remainingPreviewTime)
             } else {
                 ScribbleDashScreenTitle(
                     headline = {
