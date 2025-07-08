@@ -1,6 +1,5 @@
 package com.scribbledash.statistic
 
-import android.R.attr.shape
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,7 +34,7 @@ private fun StatisticScreen() {
     Scaffold(
         topBar = {
             ScribbleDashTopAppBar(
-                title = {
+                centerContent = {
                     Text(
                         text = stringResource(R.string.statistic_top_app_bar_title),
                         style = MaterialTheme.typography.labelLarge,

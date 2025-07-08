@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,6 +42,7 @@ import com.scribbledash.gameplay.components.ScribbleDashButton
 import com.scribbledash.gameplay.components.ScribbleDashDrawingArea
 import com.scribbledash.gameplay.components.ScribbleDashIconButton
 import com.scribbledash.gameplay.components.ScribbleDashPreviewCounter
+import com.scribbledash.gameplay.components.TimerDisplay
 import com.scribbledash.gameplay.navigation.navigateToResult
 import com.scribbledash.gameplay.presentation.GameplayAction
 import com.scribbledash.gameplay.presentation.GameplayEvent
@@ -99,7 +102,24 @@ private fun GameplayScreen(
     Scaffold(
         topBar = {
             ScribbleDashTopAppBar(
-                actions = {
+                leadingContent = {
+                    TimerDisplay(
+                        remainingTimeMs = 220000L,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .shadow(
+                                elevation = 8.dp,
+                                shape = RoundedCornerShape(50.dp),
+                                ambientColor = Color(0x1F726558),
+                                spotColor = Color(0x1F726558)
+                            )
+                            .background(
+                                color = Color.White,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                    )
+                },
+                trailingContent = {
                     IconButton(
                         onClick = onBackClick
                     ) {

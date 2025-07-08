@@ -74,7 +74,7 @@ fun DifficultyLevelScreen(
     Scaffold(
         topBar = {
             ScribbleDashTopAppBar(
-                actions = {
+                trailingContent = {
                     IconButton(
                         onClick = { onAction(DifficultyLevelAction.OnBackClicked) }
                     ) {

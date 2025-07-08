@@ -20,7 +20,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.scribbledash.R
-import com.scribbledash.core.domain.model.GameModeType
 import com.scribbledash.core.presentation.components.ScribbleDashGameModeCard
 import com.scribbledash.core.presentation.components.ScribbleDashScreenTitle
 import com.scribbledash.core.presentation.components.ScribbleDashTopAppBar
@@ -55,7 +54,7 @@ private fun HomeScreen(
     Scaffold(
         topBar = {
             ScribbleDashTopAppBar(
-                title = {
+                centerContent = {
                     Text(
                         text = stringResource(R.string.app_name),
                         style = MaterialTheme.typography.titleMedium,

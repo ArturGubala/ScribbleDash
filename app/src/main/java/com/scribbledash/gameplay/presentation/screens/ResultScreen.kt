@@ -128,7 +128,7 @@ private fun ResultScreen(
     Scaffold(
         topBar = {
             ScribbleDashTopAppBar(
-                actions = {
+                trailingContent = {
                     IconButton(
                         onClick = onBackClick
                     ) {
