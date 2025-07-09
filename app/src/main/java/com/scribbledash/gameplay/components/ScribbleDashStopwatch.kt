@@ -44,7 +44,7 @@ fun TimerDisplay(
                 fontWeight = FontWeight.Normal,
                 fontSize = 14.sp,
                 lineHeight = 18.sp,
-                color = Text
+                color = if (seconds > 30) Text else Color.Red
             ),
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
