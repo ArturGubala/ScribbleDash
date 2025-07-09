@@ -15,6 +15,8 @@
     <string name="ready_set" tools:ignore="TypographyEllipsis">Ready, set...</string>
     <string name="done">DONE</string>
     <string name="try_again">TRY AGAIN</string>
+    <string name="draw_again">DRAW AGAIN</string>
+    <string name="finish">FINISH</string>
     <plurals name="seconds_left">
         <item quantity="one">%d second left</item>
         <item quantity="other">%d seconds left</item>
