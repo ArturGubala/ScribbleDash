@@ -102,23 +102,26 @@ private fun GameplayScreen(
     Scaffold(
         topBar = {
             ScribbleDashTopAppBar(
-                leadingContent = {
-                    TimerDisplay(
-                        remainingTimeMs = 220000L,
-                        modifier = Modifier
-                            .size(48.dp)
-                            .shadow(
-                                elevation = 8.dp,
-                                shape = RoundedCornerShape(50.dp),
-                                ambientColor = Color(0x1F726558),
-                                spotColor = Color(0x1F726558)
+                leadingContent =
+                    if (state.gameType == GameType.SPEED_DRAW && !state.isPreviewVisible) {
+                        {
+                            TimerDisplay(
+                                remainingTimeMs = state.remainingCountdownTime,
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .shadow(
+                                        elevation = 8.dp,
+                                        shape = RoundedCornerShape(50.dp),
+                                        ambientColor = Color(0x1F726558),
+                                        spotColor = Color(0x1F726558)
+                                    )
+                                    .background(
+                                        color = Color.White,
+                                        shape = RoundedCornerShape(16.dp)
+                                    )
                             )
-                            .background(
-                                color = Color.White,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                    )
-                },
+                        }
+                    } else null,
                 trailingContent = {
                     IconButton(
                         onClick = onBackClick
