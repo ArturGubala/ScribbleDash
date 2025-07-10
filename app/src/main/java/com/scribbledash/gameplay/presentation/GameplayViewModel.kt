@@ -1,7 +1,6 @@
 package com.scribbledash.gameplay.presentation
 
 import android.graphics.Path
-import android.util.Log
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.lifecycle.ViewModel
@@ -51,14 +50,54 @@ class GameplayViewModel(
 
     private val eventChannel = Channel<GameplayEvent>()
     val events = eventChannel.receiveAsFlow()
-
     fun setGameConfiguration(gameType: GameType, difficultyLevel: DifficultyLevel) {
-        _state.value = _state.value.copy(
-            gameType = gameType,
-            difficultyLevel = difficultyLevel
-        )
+        when (_state.value.gameType) {
+            GameType.ONE_ROUND_WONDER -> {
+                _state.update {
+                    it.copy(
+                        gameType = gameType,
+                        difficultyLevel = difficultyLevel
+                    )
+                }
+            }
+            GameType.SPEED_DRAW -> {
+                clearCanvas()
+                showPreview()
+            }
+            GameType.ENDLESS_MODE -> TODO()
+        }
     }
 
+    private val speedDrawGameModeTimer = CountdownTimer(
+        coroutineScope = viewModelScope,
+        onTick = { time ->
+            _state.update {
+                it.copy(
+                    remainingCountdownTime = time
+                )
+            }
+        },
+        onFinished = { compareDrawings() }
+    )
+
+    private val previewTimer = CountdownTimer(
+        coroutineScope = viewModelScope,
+        onTick = { time ->
+            _state.update {
+                it.copy(
+                    remainingPreviewTime = time
+                )
+            }
+        },
+        onFinished = {
+            _state.update { it.copy(isPreviewVisible = false) }
+            if (_state.value.remainingCountdownTime <= 0) {
+                speedDrawGameModeTimer.start(45000)
+            } else {
+                speedDrawGameModeTimer.resume()
+            }
+        }
+    )
 
     fun onAction(action: GameplayAction) {
         when(action) {
@@ -68,9 +107,10 @@ class GameplayViewModel(
             GameplayAction.OnStopDrawing -> onStopDrawing()
             GameplayAction.OnUndoClick -> onUndoClick()
             GameplayAction.OnRedoClick -> onRedoClick()
-            GameplayAction.OnDoneClick -> compareDrawings()
+            GameplayAction.OnDoneClick -> onDoneClick()
             GameplayAction.ShowPreview -> showPreview()
             is GameplayAction.OnTryAgainClick -> navigateToDifficultyLevelScreen(gameType = action.gameType)
+            GameplayAction.OnDrawAgainClick -> navigateToGameplayScreen()
         }
     }
 
@@ -154,7 +194,7 @@ class GameplayViewModel(
         }
     }
 
-    private fun onClearCanvasClick() {
+    private fun clearCanvas() {
         _state.update {
             it.copy(
                 currentPath = null,
@@ -206,8 +246,8 @@ class GameplayViewModel(
             DifficultyLevel.MASTER -> 4f
         }
 
-        var userBitmap = normalizedUserDrawing.toBitmap(stroke = 3f)
-        var referenceBitmap = normalizedReferenceDrawing.toBitmap(stroke = 3f * difficultyMultiplier)
+        val userBitmap = normalizedUserDrawing.toBitmap(stroke = 3f)
+        val referenceBitmap = normalizedReferenceDrawing.toBitmap(stroke = 3f * difficultyMultiplier)
 
         val comparisonResult = bitmapExtensions.compareBitmaps(
             drawing = userBitmap,
@@ -229,7 +269,6 @@ class GameplayViewModel(
             )
         }
 
-        Log.d("RESULT", "Score: ${"%.1f".format(_state.value.score)}%")
         viewModelScope.launch {
             eventChannel.send(GameplayEvent.NavigateToResult)
         }
@@ -240,17 +279,23 @@ class GameplayViewModel(
             eventChannel.send(GameplayEvent.NavigateToDifficultyLevelScreen(gameType = gameType))
         }
     }
+    private fun navigateToGameplayScreen() {
+        viewModelScope.launch {
+            eventChannel.send(GameplayEvent.NavigateToGameplayScreen(
+                gameType = _state.value.gameType,
+                difficultyLevel = _state.value.difficultyLevel))
+        }
+    }
 
-    private val previewTimer = CountdownTimer(
-        coroutineScope = viewModelScope,
-        onTick = { time ->
-            _state.update {
-                it.copy(
-                    remainingPreviewTime = time
-                )
+    private fun onDoneClick() {
+        when(_state.value.gameType) {
+            GameType.ONE_ROUND_WONDER -> compareDrawings()
+            GameType.SPEED_DRAW -> {
+                speedDrawGameModeTimer.pause()
+                compareDrawings()
             }
-        },
-        onFinished = { _state.update { it.copy(isPreviewVisible = false) } }
-    )
+            GameType.ENDLESS_MODE -> TODO()
+        }
+    }
 
 }

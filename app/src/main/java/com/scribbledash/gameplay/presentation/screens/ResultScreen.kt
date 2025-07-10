@@ -37,12 +37,14 @@ import com.scribbledash.R
 import com.scribbledash.core.presentation.components.ScribbleDashScreenTitle
 import com.scribbledash.core.presentation.components.ScribbleDashTopAppBar
 import com.scribbledash.core.presentation.screens.difficultylevel.navigation.navigateToDifficultyLevel
+import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.core.presentation.utils.ObserveAsEvents
 import com.scribbledash.gameplay.components.ScribbleDashButton
 import com.scribbledash.gameplay.components.ScribbleDashDrawingArea
 import com.scribbledash.gameplay.model.ScribbleDashPath
 import com.scribbledash.gameplay.model.computeBounds
 import com.scribbledash.gameplay.model.toAndroidPath
+import com.scribbledash.gameplay.navigation.navigateToGameplay
 import com.scribbledash.gameplay.presentation.GameplayAction
 import com.scribbledash.gameplay.presentation.GameplayEvent
 import com.scribbledash.gameplay.presentation.GameplayState
@@ -109,6 +111,9 @@ internal fun ResultRoute(
             is GameplayEvent.NavigateToDifficultyLevelScreen -> {
                 navController.navigateToDifficultyLevel(state.gameType)
             }
+            is GameplayEvent.NavigateToGameplayScreen -> {
+                navController.navigateToGameplay(gameType = event.gameType, difficultyLevel = event.difficultyLevel)
+            }
         }
     }
 
@@ -165,6 +170,12 @@ private fun ResultScreen(
                 else -> "Woohoo!"
             }
 
+            val primaryButtonText = when (state.gameType) {
+                GameType.ONE_ROUND_WONDER -> stringResource(R.string.try_again)
+                GameType.SPEED_DRAW -> stringResource(R.string.draw_again)
+                GameType.ENDLESS_MODE -> stringResource(R.string.finish)
+            }
+
             ScribbleDashScreenTitle(
                 headline = {
                     Text(
@@ -179,7 +190,6 @@ private fun ResultScreen(
                     .padding(bottom = 47.dp),
             )
 
-            // Canvasy
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
@@ -236,8 +246,14 @@ private fun ResultScreen(
 
             Spacer(modifier = Modifier.weight(1f))
             ScribbleDashButton(
-                description = stringResource(R.string.try_again),
-                onClick = { onAction(GameplayAction.OnTryAgainClick(gameType = state.gameType)) },
+                description = primaryButtonText,
+                onClick = {
+                    when(state.gameType) {
+                        GameType.ONE_ROUND_WONDER -> onAction(GameplayAction.OnTryAgainClick(gameType = state.gameType))
+                        GameType.SPEED_DRAW -> onAction(GameplayAction.OnDrawAgainClick)
+                        GameType.ENDLESS_MODE -> TODO()
+                    }
+                },
                 buttonColor = Color(0xFF238CFF),
                 modifier = Modifier
                     .fillMaxWidth()
