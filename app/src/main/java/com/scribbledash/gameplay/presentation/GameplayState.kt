@@ -13,7 +13,7 @@ data class GameplayState (
     val redoPaths: ArrayDeque<PathData> = ArrayDeque(),
     val isPreviewVisible: Boolean = false,
     val remainingPreviewTime: Long = 0L,
-    val remainingCountdownTime: Int = 0,
+    val remainingCountdownTime: Long = 0L,
     val drawings: List<ScribbleDashPath> = emptyList(),
     val previewDrawing: ScribbleDashPath? = null,
     val score: Float = 0f,
