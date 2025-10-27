@@ -43,6 +43,7 @@ import com.scribbledash.gameplay.components.ScribbleDashDrawingArea
 import com.scribbledash.gameplay.components.ScribbleDashIconButton
 import com.scribbledash.gameplay.components.ScribbleDashPreviewCounter
 import com.scribbledash.gameplay.components.TimerDisplay
+import com.scribbledash.gameplay.navigation.GAMEPLAY_GRAPH_ROUTE
 import com.scribbledash.gameplay.navigation.navigateToResult
 import com.scribbledash.gameplay.presentation.GameplayAction
 import com.scribbledash.gameplay.presentation.GameplayEvent
@@ -58,7 +59,7 @@ internal fun GameplayRoute(
     difficultyLevel: DifficultyLevel,
     navController: NavController
 ) {
-    val viewModel: GameplayViewModel = sharedViewModel(navController, "gameplay_root")
+    val viewModel: GameplayViewModel = sharedViewModel(navController, GAMEPLAY_GRAPH_ROUTE)
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(gameType, difficultyLevel) {

@@ -44,6 +44,7 @@ import com.scribbledash.gameplay.components.ScribbleDashDrawingArea
 import com.scribbledash.gameplay.model.ScribbleDashPath
 import com.scribbledash.gameplay.model.computeBounds
 import com.scribbledash.gameplay.model.toAndroidPath
+import com.scribbledash.gameplay.navigation.GAMEPLAY_GRAPH_ROUTE
 import com.scribbledash.gameplay.navigation.navigateToGameplay
 import com.scribbledash.gameplay.presentation.GameplayAction
 import com.scribbledash.gameplay.presentation.GameplayEvent
@@ -96,7 +97,7 @@ val woohooFeedbackList = listOf(
 internal fun ResultRoute(
     navController: NavController
 ) {
-    val viewModel: GameplayViewModel = sharedViewModel(navController, "gameplay_root")
+    val viewModel: GameplayViewModel = sharedViewModel(navController, GAMEPLAY_GRAPH_ROUTE)
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     BackHandler {

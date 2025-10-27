@@ -7,17 +7,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import com.scribbledash.core.presentation.navigation.Route
-import com.scribbledash.core.presentation.screens.difficultylevel.navigation.DifficultyLevelScreen
 import com.scribbledash.core.presentation.utils.DifficultyLevel
 import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.gameplay.presentation.screens.GameplayRoute
 import com.scribbledash.gameplay.presentation.screens.ResultRoute
 import kotlinx.serialization.Serializable
 
+const val GAMEPLAY_GRAPH_ROUTE = "gameplay_graph"
+
 fun NavGraphBuilder.gameplayNavGraph(navController: NavController) {
     navigation(
         startDestination = GameplayScreen.serializer().toString(),
-        route = "gameplay_root"
+        route = GAMEPLAY_GRAPH_ROUTE
     ) {
         gameplayScreen(navController)
         resultScreen(navController)
