@@ -281,6 +281,7 @@ class GameplayViewModel(
     }
     private fun navigateToGameplayScreen() {
         viewModelScope.launch {
+            _state.update { it.copy(remainingCountdownTime = 0L) }
             eventChannel.send(GameplayEvent.NavigateToGameplayScreen(
                 gameType = _state.value.gameType,
                 difficultyLevel = _state.value.difficultyLevel))
