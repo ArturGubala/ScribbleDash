@@ -77,7 +77,12 @@ class GameplayViewModel(
                 )
             }
         },
-        onFinished = { compareDrawings() }
+        onFinished = {
+            compareDrawings(gameType = GameType.SPEED_DRAW)
+            viewModelScope.launch {
+                eventChannel.send(GameplayEvent.NavigateToResult)
+            }
+        }
     )
 
     private val previewTimer = CountdownTimer(
@@ -228,7 +233,7 @@ class GameplayViewModel(
         }
     }
 
-    private fun compareDrawings() {
+    private fun compareDrawings(gameType: GameType) {
         val previewDrawing = ScribbleDashPath(
             path = Path(_state.value.previewDrawing!!.path),
             bounds = _state.value.previewDrawing!!.bounds
@@ -263,14 +268,27 @@ class GameplayViewModel(
         } else 0f
 
         val rawScore = comparisonResult - lengthPenalty
-        _state.update {
-            it.copy(
-                score = rawScore.coerceIn(0f, 100f)
-            )
-        }
 
-        viewModelScope.launch {
-            eventChannel.send(GameplayEvent.NavigateToResult)
+        when(gameType) {
+            GameType.ONE_ROUND_WONDER,
+            GameType.ENDLESS_MODE ->  {
+                _state.update {
+                    it.copy(
+                        score = rawScore.coerceIn(0f, 100f)
+                    )
+                }
+            }
+            GameType.SPEED_DRAW -> {
+                val currentScore = _state.value.score
+                var drawingCount = _state.value.drawingCounter
+                val newScore = rawScore.coerceIn(0f, 100f)
+                _state.update {
+                    it.copy(
+                        score = (currentScore * drawingCount + newScore) / (drawingCount + 1),
+                        drawingCounter = ++drawingCount
+                    )
+                }
+            }
         }
     }
 
@@ -290,10 +308,18 @@ class GameplayViewModel(
 
     private fun onDoneClick() {
         when(_state.value.gameType) {
-            GameType.ONE_ROUND_WONDER -> compareDrawings()
+            GameType.ONE_ROUND_WONDER -> {
+                compareDrawings(gameType = GameType.ONE_ROUND_WONDER)
+                viewModelScope.launch {
+                    eventChannel.send(GameplayEvent.NavigateToResult)
+                }
+            }
             GameType.SPEED_DRAW -> {
                 speedDrawGameModeTimer.pause()
-                compareDrawings()
+                compareDrawings(gameType = GameType.SPEED_DRAW)
+                _state.update { it.copy(previewDrawing = _drawings.value.random()) }
+                showPreview()
+                clearCanvas()
             }
             GameType.ENDLESS_MODE -> TODO()
         }
