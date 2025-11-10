@@ -31,14 +31,14 @@ fun ScribbleDashDrawingCounter(
     ) {
             Box(
                 modifier = Modifier
-                    .width(60.dp)
-                    .height(28.dp)
+                    .width(65.dp)
+                    .height(32.dp)
                     .background(
                         color = Color(color = 0xFFEEE7E0),
                         shape = RoundedCornerShape(50.dp)
                     )
                     .align(alignment = Alignment.CenterEnd)
-                    .offset(x = 5.dp),
+                    .offset(x = 10.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -50,10 +50,9 @@ fun ScribbleDashDrawingCounter(
                         color = Color(0xFF514437)
                     )
                 )
-
             }
             Image(
-                painter = painterResource(R.drawable.ic_palette),
+                painter = painterResource(R.drawable.ic_palette_outlined),
                 contentDescription = null,
                 modifier = Modifier
                     .align(alignment = Alignment.CenterStart)
