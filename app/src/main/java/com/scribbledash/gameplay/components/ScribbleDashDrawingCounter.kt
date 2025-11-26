@@ -1,8 +1,11 @@
 package com.scribbledash.gameplay.components
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
@@ -23,22 +26,25 @@ import com.scribbledash.ui.theme.ScribbleDashTheme
 @Composable
 fun ScribbleDashDrawingCounter(
     value: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = Color(color = 0xFFEEE7E0),
+    textColor: Color = Color(0xFF514437),
+    @DrawableRes icon: Int = R.drawable.ic_palette
 ) {
     Box(
-        modifier = modifier,
+        modifier = modifier.background(Color.White),
         contentAlignment = Alignment.Center
     ) {
             Box(
                 modifier = Modifier
-                    .width(65.dp)
+                    .width(60.dp)
                     .height(32.dp)
                     .background(
-                        color = Color(color = 0xFFEEE7E0),
+                        color = backgroundColor,
                         shape = RoundedCornerShape(50.dp)
                     )
                     .align(alignment = Alignment.CenterEnd)
-                    .offset(x = 10.dp),
+                    .offset(x = 5.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -47,12 +53,12 @@ fun ScribbleDashDrawingCounter(
                     style = MaterialTheme.typography.headlineSmall.copy(
                         fontSize = 14.sp,
                         lineHeight = 18.sp,
-                        color = Color(0xFF514437)
+                        color = textColor
                     )
                 )
             }
             Image(
-                painter = painterResource(R.drawable.ic_palette_outlined),
+                painter = painterResource(icon),
                 contentDescription = null,
                 modifier = Modifier
                     .align(alignment = Alignment.CenterStart)
@@ -64,10 +70,23 @@ fun ScribbleDashDrawingCounter(
 @Composable
 fun ScribbleDashDrawingCounterPreview() {
     ScribbleDashTheme {
-        ScribbleDashDrawingCounter(
-            value = "0",
-            modifier = Modifier
-                .width(76.dp)
-        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            ScribbleDashDrawingCounter(
+                value = "0",
+                modifier = Modifier
+                    .width(76.dp)
+            )
+
+            ScribbleDashDrawingCounter(
+                value = "0",
+                modifier = Modifier
+                    .width(78.dp),
+                backgroundColor = Color(color = 0xFFED6363),
+                textColor = Color.White,
+                icon = R.drawable.ic_palette_outlined
+            )
+        }
     }
 }
