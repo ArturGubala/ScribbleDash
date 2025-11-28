@@ -30,7 +30,7 @@ fun ScribbleDashScoreCard(
     isHighScore: Boolean = false
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .width(width = 380.dp)
             .background(
                 color = Color.White,
@@ -51,7 +51,7 @@ fun ScribbleDashScoreCard(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = score.toString(),
+                text = "$score%",
                 style = MaterialTheme.typography.displayLarge.copy(fontSize = 66.sp)
             )
         }
