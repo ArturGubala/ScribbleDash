@@ -24,9 +24,11 @@ import com.scribbledash.R
 import com.scribbledash.ui.theme.ScribbleDashTheme
 
 @Composable
-fun ScribbleDashHighScoreBanner() {
+fun ScribbleDashHighScoreBanner(
+    modifier: Modifier = Modifier
+) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .width(150.dp)
             .height(34.dp),
         contentAlignment = Alignment.Center
