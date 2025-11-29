@@ -11,6 +11,7 @@ import com.scribbledash.core.presentation.utils.DifficultyLevel
 import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.gameplay.presentation.screens.GameplayRoute
 import com.scribbledash.gameplay.presentation.screens.ResultRoute
+import com.scribbledash.gameplay.presentation.screens.SummaryRoute
 import kotlinx.serialization.Serializable
 
 const val GAMEPLAY_GRAPH_ROUTE = "gameplay_graph"
@@ -57,6 +58,17 @@ fun NavGraphBuilder.resultScreen(
     }
 }
 
+fun NavController.navigateToSummary(navOptions: NavOptions? = null) =
+    navigate(SummaryScreen, navOptions = navOptions)
+
+fun NavGraphBuilder.summaryScreen(
+    navController: NavController
+) {
+    composable<SummaryScreen> {
+        SummaryRoute(navController = navController)
+    }
+}
+
 @Serializable
 data class GameplayScreen (
     val gameType: GameType,
@@ -65,3 +77,6 @@ data class GameplayScreen (
 
 @Serializable
 object ResultScreen : Route
+
+@Serializable
+object SummaryScreen : Route
