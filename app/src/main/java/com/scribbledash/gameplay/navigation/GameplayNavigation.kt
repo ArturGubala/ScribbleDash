@@ -23,6 +23,7 @@ fun NavGraphBuilder.gameplayNavGraph(navController: NavController) {
     ) {
         gameplayScreen(navController)
         resultScreen(navController)
+        summaryScreen(navController)
     }
 }
 

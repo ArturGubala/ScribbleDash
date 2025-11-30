@@ -32,7 +32,7 @@ fun ScribbleDashDrawingCounter(
     @DrawableRes icon: Int = R.drawable.ic_palette
 ) {
     Box(
-        modifier = modifier.background(Color.White),
+        modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
             Box(
