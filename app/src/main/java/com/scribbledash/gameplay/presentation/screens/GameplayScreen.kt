@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -40,11 +41,13 @@ import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.core.presentation.utils.ObserveAsEvents
 import com.scribbledash.gameplay.components.ScribbleDashButton
 import com.scribbledash.gameplay.components.ScribbleDashDrawingArea
+import com.scribbledash.gameplay.components.ScribbleDashDrawingCounter
 import com.scribbledash.gameplay.components.ScribbleDashIconButton
 import com.scribbledash.gameplay.components.ScribbleDashPreviewCounter
 import com.scribbledash.gameplay.components.TimerDisplay
 import com.scribbledash.gameplay.navigation.GAMEPLAY_GRAPH_ROUTE
 import com.scribbledash.gameplay.navigation.navigateToResult
+import com.scribbledash.gameplay.navigation.navigateToSummary
 import com.scribbledash.gameplay.presentation.GameplayAction
 import com.scribbledash.gameplay.presentation.GameplayEvent
 import com.scribbledash.gameplay.presentation.GameplayState
@@ -77,6 +80,9 @@ internal fun GameplayRoute(
             }
             is GameplayEvent.NavigateToResult -> {
                 navController.navigateToResult()
+            }
+            is GameplayEvent.NavigateToSummary -> {
+                navController.navigateToSummary()
             }
         }
     }
@@ -120,6 +126,17 @@ private fun GameplayScreen(
                                         color = Color.White,
                                         shape = RoundedCornerShape(16.dp)
                                     )
+                            )
+                        }
+                    } else null,
+                centerContent =
+                    if (state.gameType == GameType.SPEED_DRAW ||
+                        state.gameType == GameType.ENDLESS_MODE) {
+                        {
+                            ScribbleDashDrawingCounter(
+                                value = state.drawingCounter.toString(),
+                                modifier = Modifier
+                                    .width(76.dp)
                             )
                         }
                     } else null,
