@@ -43,7 +43,7 @@ class ScribbleDashCore: Application() {
 fun ScribbleDashApp(
     appState: ScribbleDashAppState
 ) {
-    var showBottomAppBar = appState.topLevelDestinations.any {
+    val showBottomAppBar = appState.topLevelDestinations.any {
         appState.currentDestination.isTopLevelDestinationInHierarchy(it)
     }
 

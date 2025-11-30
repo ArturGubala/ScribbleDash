@@ -106,15 +106,15 @@ class BitmapExtensions(private val context: Context) {
         // TODO: testing
         saveToGallery(
             bitmap = comparisonBitmap,
-            fileName = "comparisonBitmap.png"
+            fileName = "comparisonBitmap_${System.currentTimeMillis()}.png"
         )
         saveToGallery(
             bitmap = drawing,
-            fileName = "drawing.png"
+            fileName = "drawing_${System.currentTimeMillis()}.png"
         )
         saveToGallery(
             bitmap = reference,
-            fileName = "reference.png"
+            fileName = "reference_${System.currentTimeMillis()}.png"
         )
 
         if (visibleUserPixels == 0) return 0f
