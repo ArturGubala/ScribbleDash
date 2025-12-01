@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Icon
@@ -30,19 +29,22 @@ import androidx.navigation.NavController
 import com.scribbledash.R
 import com.scribbledash.core.presentation.components.ScribbleDashTopAppBar
 import com.scribbledash.core.presentation.utils.GameType
+import com.scribbledash.core.presentation.utils.ObserveAsEvents
 import com.scribbledash.gameplay.components.ScribbleDashButton
-import com.scribbledash.gameplay.components.ScribbleDashHighScoreBanner
 import com.scribbledash.gameplay.components.ScribbleDashScoreCard
 import com.scribbledash.gameplay.navigation.GAMEPLAY_GRAPH_ROUTE
+import com.scribbledash.gameplay.navigation.navigateToGameplay
 import com.scribbledash.gameplay.presentation.GameplayAction
+import com.scribbledash.gameplay.presentation.GameplayEvent
 import com.scribbledash.gameplay.presentation.GameplayState
 import com.scribbledash.gameplay.presentation.GameplayViewModel
 import com.scribbledash.gameplay.utils.sharedViewModel
+import com.scribbledash.home.navigation.HomeScreen
 import com.scribbledash.ui.theme.ScribbleDashTheme
 
 @Composable
 internal fun SummaryRoute(
-    navController: NavController
+    navController: NavController,
 ) {
     val viewModel: GameplayViewModel = sharedViewModel(navController, GAMEPLAY_GRAPH_ROUTE)
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -50,13 +52,34 @@ internal fun SummaryRoute(
     BackHandler {
         viewModel.onAction(GameplayAction.OnBackClicked)
     }
-    
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is GameplayEvent.NavigateBackToHome -> {
+                navController.popBackStack(route = HomeScreen, inclusive = false)
+            }
+
+            is GameplayEvent.NavigateToGameplayScreen -> {
+                navController.navigateToGameplay(
+                    gameType = event.gameType,
+                    difficultyLevel = event.difficultyLevel
+                )
+            }
+        }
+    }
+
+    SummaryScreen(
+        onBackClick = { viewModel.onAction(GameplayAction.OnBackClicked) },
+        state = state,
+        onAction = viewModel::onAction
+    )
 }
 
 @Composable
 private fun SummaryScreen(
     onBackClick: () -> Unit,
     state: GameplayState,
+    onAction: (GameplayAction) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -98,13 +121,11 @@ private fun SummaryScreen(
                 contentAlignment = Alignment.TopCenter
             ) {
                 ScribbleDashScoreCard(
-                    score = 45,
+                    score = state.score,
+                    drawings = state.drawingCounter,
                     feedbackTitle = "Meh",
                     feedbackDescription = "This is what happens when you let a cat hold the pencil!",
-                    isHighScore = false
-                )
-                ScribbleDashHighScoreBanner(
-                    modifier = Modifier.offset(y = -(10).dp)
+                    isHighScore = true
                 )
             }
 
@@ -112,9 +133,9 @@ private fun SummaryScreen(
             ScribbleDashButton(
                 description = "DRAW AGAIN",
                 onClick = {
-                    when(state.gameType) {
+                    when (state.gameType) {
                         GameType.ONE_ROUND_WONDER -> TODO()
-                        GameType.SPEED_DRAW -> TODO()
+                        GameType.SPEED_DRAW -> onAction(GameplayAction.OnDrawAgainClick)
                         GameType.ENDLESS_MODE -> TODO()
                     }
                 },
@@ -133,8 +154,9 @@ private fun SummaryScreen(
 private fun ResultScreenPreview() {
     ScribbleDashTheme {
         SummaryScreen(
-          onBackClick = {},
-          state = GameplayState()
+            onBackClick = {},
+            state = GameplayState(),
+            onAction = {}
         )
     }
 }

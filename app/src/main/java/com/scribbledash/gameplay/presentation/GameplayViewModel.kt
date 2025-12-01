@@ -1,6 +1,7 @@
 package com.scribbledash.gameplay.presentation
 
 import android.graphics.Path
+import android.util.Log
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.lifecycle.ViewModel
@@ -80,7 +81,7 @@ class GameplayViewModel(
         onFinished = {
             compareDrawings(gameType = GameType.SPEED_DRAW)
             viewModelScope.launch {
-                eventChannel.send(GameplayEvent.NavigateToResult)
+                eventChannel.send(GameplayEvent.NavigateToSummary)
             }
         }
     )
@@ -282,11 +283,14 @@ class GameplayViewModel(
                 val currentScore = _state.value.score
                 var drawingCount = _state.value.drawingCounter
                 val newScore = rawScore.coerceIn(0f, 100f)
-                _state.update {
-                    it.copy(
-                        score = (currentScore * drawingCount + newScore) / (drawingCount + 1),
-                        drawingCounter = ++drawingCount
-                    )
+
+                if (newScore >= 40) {
+                    _state.update {
+                        it.copy(
+                            score = (currentScore * drawingCount + newScore) / (drawingCount + 1),
+                            drawingCounter = ++drawingCount
+                        )
+                    }
                 }
             }
         }
@@ -299,7 +303,10 @@ class GameplayViewModel(
     }
     private fun navigateToGameplayScreen() {
         viewModelScope.launch {
-            _state.update { it.copy(remainingCountdownTime = 0L) }
+            _state.update { it.copy(
+                remainingCountdownTime = 0L,
+                drawingCounter = 0
+            ) }
             eventChannel.send(GameplayEvent.NavigateToGameplayScreen(
                 gameType = _state.value.gameType,
                 difficultyLevel = _state.value.difficultyLevel))
