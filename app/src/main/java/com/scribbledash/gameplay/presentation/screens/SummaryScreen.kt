@@ -138,7 +138,7 @@ private fun SummaryScreen(
                 onClick = {
                     when (state.gameType) {
                         GameType.SPEED_DRAW -> onAction(GameplayAction.OnDrawAgainClick)
-                        GameType.ENDLESS_MODE -> onAction(GameplayAction.OnTryAgainClick(gameType = state.gameType))
+                        GameType.ENDLESS -> onAction(GameplayAction.OnTryAgainClick(gameType = state.gameType))
                         else -> {}
                     }
                 },

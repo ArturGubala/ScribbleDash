@@ -118,7 +118,7 @@ private fun HomeScreen(
                 description = R.string.endless_mode,
                 borderColor = Color(0xFFFA852C),
                 onClick = {
-                    onAction(HomeAction.OnGameModeTypeClick(GameType.ENDLESS_MODE))
+                    onAction(HomeAction.OnGameModeTypeClick(GameType.ENDLESS))
                 }
             )
         }

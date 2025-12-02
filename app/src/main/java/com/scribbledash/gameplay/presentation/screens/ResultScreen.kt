@@ -179,7 +179,7 @@ private fun ResultScreen(
             val primaryButtonText = when (state.gameType) {
                 GameType.ONE_ROUND_WONDER -> stringResource(R.string.try_again)
                 GameType.SPEED_DRAW -> stringResource(R.string.draw_again)
-                GameType.ENDLESS_MODE -> stringResource(R.string.finish)
+                GameType.ENDLESS -> stringResource(R.string.finish)
             }
 
             ScribbleDashScreenTitle(
@@ -190,7 +190,7 @@ private fun ResultScreen(
                             GameType.SPEED_DRAW -> {
                                 "${"%.0f".format(state.finalScore)}%"
                             }
-                            GameType.ENDLESS_MODE -> {
+                            GameType.ENDLESS -> {
                                 "${"%.0f".format(state.lastScore)}%"
                             }
                         },
@@ -238,7 +238,7 @@ private fun ResultScreen(
 
                 }
 
-                if (state.gameType == GameType.ENDLESS_MODE) {
+                if (state.gameType == GameType.ENDLESS) {
                     if (state.lastScore >= 70) {
                         Image(
                             painter = painterResource(R.drawable.ic_check),
@@ -282,7 +282,7 @@ private fun ResultScreen(
                     when(state.gameType) {
                         GameType.ONE_ROUND_WONDER -> onAction(GameplayAction.OnTryAgainClick(gameType = state.gameType))
                         GameType.SPEED_DRAW -> onAction(GameplayAction.OnDrawAgainClick)
-                        GameType.ENDLESS_MODE -> onAction(GameplayAction.OnFinishClick)
+                        GameType.ENDLESS -> onAction(GameplayAction.OnFinishClick)
                     }
                 },
                 buttonColor = Color(0xFF238CFF),
@@ -291,12 +291,12 @@ private fun ResultScreen(
                     .height(64.dp),
                 isActive = true
             )
-            if (state.gameType == GameType.ENDLESS_MODE && state.lastScore >= 70) {
+            if (state.gameType == GameType.ENDLESS && state.lastScore >= 70) {
                 ScribbleDashButton(
                     description = "NEXT DRAWING",
                     onClick = {
                         when(state.gameType) {
-                            GameType.ENDLESS_MODE -> onAction(GameplayAction.OnDrawAgainClick)
+                            GameType.ENDLESS -> onAction(GameplayAction.OnDrawAgainClick)
                             else -> { }
                         }
                     },

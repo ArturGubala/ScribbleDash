@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -131,7 +130,7 @@ private fun GameplayScreen(
                     } else null,
                 centerContent =
                     if (state.gameType == GameType.SPEED_DRAW ||
-                        state.gameType == GameType.ENDLESS_MODE) {
+                        state.gameType == GameType.ENDLESS) {
                         {
                             ScribbleDashDrawingCounter(
                                 value = state.drawingCounter.toString(),

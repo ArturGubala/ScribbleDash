@@ -66,7 +66,7 @@ class GameplayViewModel(
                 clearCanvas()
                 showPreview()
             }
-            GameType.ENDLESS_MODE-> {
+            GameType.ENDLESS-> {
                 _state.update { it.copy(previewDrawing = _drawings.value.random()) }
                 clearCanvas()
                 showPreview()
@@ -304,7 +304,7 @@ class GameplayViewModel(
                     }
                 }
             }
-            GameType.ENDLESS_MODE -> {
+            GameType.ENDLESS -> {
                 val currentScore = _state.value.finalScore
                 var drawingCount = _state.value.drawingCounter
                 val newScore = rawScore.coerceIn(0f, 100f)
@@ -339,7 +339,7 @@ class GameplayViewModel(
                         drawingCounter = 0
                     ) }
                 }
-                GameType.ENDLESS_MODE -> {
+                GameType.ENDLESS -> {
                     _state.update { it.copy(
                         lastScore = 0f
                     ) }
@@ -369,9 +369,9 @@ class GameplayViewModel(
                     clearCanvas()
                 }
             }
-            GameType.ENDLESS_MODE -> {
+            GameType.ENDLESS -> {
                 viewModelScope.launch {
-                    compareDrawings(gameType = GameType.ENDLESS_MODE)
+                    compareDrawings(gameType = GameType.ENDLESS)
                     eventChannel.send(GameplayEvent.NavigateToResult)
                 }
             }
