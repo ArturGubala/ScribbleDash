@@ -2,6 +2,7 @@ package com.scribbledash.gameplay.presentation.screens
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,6 +47,7 @@ import com.scribbledash.gameplay.model.computeBounds
 import com.scribbledash.gameplay.model.toAndroidPath
 import com.scribbledash.gameplay.navigation.GAMEPLAY_GRAPH_ROUTE
 import com.scribbledash.gameplay.navigation.navigateToGameplay
+import com.scribbledash.gameplay.navigation.navigateToSummary
 import com.scribbledash.gameplay.presentation.GameplayAction
 import com.scribbledash.gameplay.presentation.GameplayEvent
 import com.scribbledash.gameplay.presentation.GameplayState
@@ -115,6 +117,9 @@ internal fun ResultRoute(
             is GameplayEvent.NavigateToGameplayScreen -> {
                 navController.navigateToGameplay(gameType = event.gameType, difficultyLevel = event.difficultyLevel)
             }
+            is GameplayEvent.NavigateToSummary -> {
+                navController.navigateToSummary()
+            }
         }
     }
 
@@ -159,11 +164,11 @@ private fun ResultScreen(
                 .padding(start = 16.dp, end = 16.dp, top = 84.dp, bottom = 23.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val randomFeedbackId = remember(state.score) {
-                getRandomFeedback(state.score.toInt())
+            val randomFeedbackId = remember(state.finalScore) {
+                getRandomFeedback(state.finalScore.toInt())
             }
 
-            val scoreHeadline: String = when (state.score.toInt()) {
+            val scoreHeadline: String = when (state.finalScore.toInt()) {
                 in (0..39) -> "Oops"
                 in (40..69) -> "Meh"
                 in (70..79) -> "Good"
@@ -180,7 +185,15 @@ private fun ResultScreen(
             ScribbleDashScreenTitle(
                 headline = {
                     Text(
-                        text = "${"%.0f".format(state.score)}%",
+                        text = when (state.gameType) {
+                            GameType.ONE_ROUND_WONDER,
+                            GameType.SPEED_DRAW -> {
+                                "${"%.0f".format(state.finalScore)}%"
+                            }
+                            GameType.ENDLESS_MODE -> {
+                                "${"%.0f".format(state.lastScore)}%"
+                            }
+                        },
                         style = MaterialTheme.typography.displayLarge,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
@@ -191,38 +204,55 @@ private fun ResultScreen(
                     .padding(bottom = 47.dp),
             )
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                Box(
-                    modifier = Modifier.rotate(-10f)
+            Box(contentAlignment = Alignment.BottomCenter) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    ScribbleDashDrawingArea(
-                        currentPath = state.currentPath,
-                        paths = state.paths,
-                        exampleDrawing = state.previewDrawing,
-                        onAction = onAction,
-                        modifier = Modifier.size(160.dp),
-                        canDrawing = false
-                    )
+                    Box(
+                        modifier = Modifier.rotate(-10f)
+                    ) {
+                        ScribbleDashDrawingArea(
+                            currentPath = state.currentPath,
+                            paths = state.paths,
+                            exampleDrawing = state.previewDrawing,
+                            onAction = onAction,
+                            modifier = Modifier.size(160.dp),
+                            canDrawing = false
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .offset(y = 25.dp)
+                            .rotate(10f)
+                            .padding(bottom = 45.dp)
+                    ) {
+                        ScribbleDashDrawingArea(
+                            currentPath = state.currentPath,
+                            paths = state.paths,
+                            exampleDrawing = ScribbleDashPath(state.paths.toAndroidPath(), state.paths.toAndroidPath().computeBounds(   )),
+                            onAction = onAction,
+                            modifier = Modifier.size(160.dp),
+                            canDrawing = false
+                        )
+                    }
+
                 }
 
-                Box(
-                    modifier = Modifier
-                        .offset(y = 25.dp)
-                        .rotate(10f)
-                        .padding(bottom = 45.dp)
-                ) {
-                    ScribbleDashDrawingArea(
-                        currentPath = state.currentPath,
-                        paths = state.paths,
-                        exampleDrawing = ScribbleDashPath(state.paths.toAndroidPath(), state.paths.toAndroidPath().computeBounds(   )),
-                        onAction = onAction,
-                        modifier = Modifier.size(160.dp),
-                        canDrawing = false
-                    )
+                if (state.gameType == GameType.ENDLESS_MODE) {
+                    if (state.lastScore >= 70) {
+                        Image(
+                            painter = painterResource(R.drawable.ic_check),
+                            contentDescription = "Check icon",
+                            modifier = Modifier.size(84.dp)
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(R.drawable.ic_cross),
+                            contentDescription = "Check icon",
+                            modifier = Modifier.size(84.dp)
+                        )
+                    }
                 }
-
             }
 
             ScribbleDashScreenTitle(
@@ -252,7 +282,7 @@ private fun ResultScreen(
                     when(state.gameType) {
                         GameType.ONE_ROUND_WONDER -> onAction(GameplayAction.OnTryAgainClick(gameType = state.gameType))
                         GameType.SPEED_DRAW -> onAction(GameplayAction.OnDrawAgainClick)
-                        GameType.ENDLESS_MODE -> TODO()
+                        GameType.ENDLESS_MODE -> onAction(GameplayAction.OnFinishClick)
                     }
                 },
                 buttonColor = Color(0xFF238CFF),
@@ -261,6 +291,22 @@ private fun ResultScreen(
                     .height(64.dp),
                 isActive = true
             )
+            if (state.gameType == GameType.ENDLESS_MODE && state.lastScore >= 70) {
+                ScribbleDashButton(
+                    description = "NEXT DRAWING",
+                    onClick = {
+                        when(state.gameType) {
+                            GameType.ENDLESS_MODE -> onAction(GameplayAction.OnDrawAgainClick)
+                            else -> { }
+                        }
+                    },
+                    buttonColor = Color(0xFF0DD280),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(64.dp),
+                    isActive = true
+                )
+            }
         }
     }
 }

@@ -28,6 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.scribbledash.R
 import com.scribbledash.core.presentation.components.ScribbleDashTopAppBar
+import com.scribbledash.core.presentation.screens.difficultylevel.navigation.navigateToDifficultyLevel
 import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.core.presentation.utils.ObserveAsEvents
 import com.scribbledash.gameplay.components.ScribbleDashButton
@@ -58,12 +59,14 @@ internal fun SummaryRoute(
             is GameplayEvent.NavigateBackToHome -> {
                 navController.popBackStack(route = HomeScreen, inclusive = false)
             }
-
             is GameplayEvent.NavigateToGameplayScreen -> {
                 navController.navigateToGameplay(
                     gameType = event.gameType,
                     difficultyLevel = event.difficultyLevel
                 )
+            }
+            is GameplayEvent.NavigateToDifficultyLevelScreen -> {
+                navController.navigateToDifficultyLevel(gameType = state.gameType)
             }
         }
     }
@@ -121,7 +124,7 @@ private fun SummaryScreen(
                 contentAlignment = Alignment.TopCenter
             ) {
                 ScribbleDashScoreCard(
-                    score = state.score,
+                    score = state.finalScore,
                     drawings = state.drawingCounter,
                     feedbackTitle = "Meh",
                     feedbackDescription = "This is what happens when you let a cat hold the pencil!",
@@ -134,9 +137,9 @@ private fun SummaryScreen(
                 description = "DRAW AGAIN",
                 onClick = {
                     when (state.gameType) {
-                        GameType.ONE_ROUND_WONDER -> TODO()
                         GameType.SPEED_DRAW -> onAction(GameplayAction.OnDrawAgainClick)
-                        GameType.ENDLESS_MODE -> TODO()
+                        GameType.ENDLESS_MODE -> onAction(GameplayAction.OnTryAgainClick(gameType = state.gameType))
+                        else -> {}
                     }
                 },
                 buttonColor = Color(0xFF238CFF),

@@ -1,7 +1,6 @@
 package com.scribbledash.gameplay.presentation
 
 import android.graphics.Path
-import android.util.Log
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.lifecycle.ViewModel
@@ -20,6 +19,7 @@ import com.scribbledash.gameplay.model.toBitmap
 import com.scribbledash.gameplay.utils.BitmapExtensions
 import com.scribbledash.gameplay.utils.CountdownTimer
 import com.scribbledash.gameplay.utils.VectorXmlParser
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class GameplayViewModel(
     private val vectorXmlParser: VectorXmlParser,
@@ -65,7 +66,11 @@ class GameplayViewModel(
                 clearCanvas()
                 showPreview()
             }
-            GameType.ENDLESS_MODE -> TODO()
+            GameType.ENDLESS_MODE-> {
+                _state.update { it.copy(previewDrawing = _drawings.value.random()) }
+                clearCanvas()
+                showPreview()
+            }
         }
     }
 
@@ -79,8 +84,9 @@ class GameplayViewModel(
             }
         },
         onFinished = {
-            compareDrawings(gameType = GameType.SPEED_DRAW)
+
             viewModelScope.launch {
+                compareDrawings(gameType = GameType.SPEED_DRAW)
                 eventChannel.send(GameplayEvent.NavigateToSummary)
             }
         }
@@ -97,10 +103,12 @@ class GameplayViewModel(
         },
         onFinished = {
             _state.update { it.copy(isPreviewVisible = false) }
-            if (_state.value.remainingCountdownTime <= 0) {
-                speedDrawGameModeTimer.start(45000)
-            } else {
-                speedDrawGameModeTimer.resume()
+            if (_state.value.gameType == GameType.SPEED_DRAW) {
+                if (_state.value.remainingCountdownTime <= 0) {
+                    speedDrawGameModeTimer.start(45000)
+                } else {
+                    speedDrawGameModeTimer.resume()
+                }
             }
         }
     )
@@ -117,6 +125,7 @@ class GameplayViewModel(
             GameplayAction.ShowPreview -> showPreview()
             is GameplayAction.OnTryAgainClick -> navigateToDifficultyLevelScreen(gameType = action.gameType)
             GameplayAction.OnDrawAgainClick -> navigateToGameplayScreen()
+            GameplayAction.OnFinishClick -> navigateToSummaryScreen()
         }
     }
 
@@ -234,64 +243,84 @@ class GameplayViewModel(
         }
     }
 
-    private fun compareDrawings(gameType: GameType) {
-        val previewDrawing = ScribbleDashPath(
-            path = Path(_state.value.previewDrawing!!.path),
-            bounds = _state.value.previewDrawing!!.bounds
-        )
+    private suspend fun compareDrawings(gameType: GameType) {
+        var rawScore = 0f
+        val comparisonResult = withContext(Dispatchers.Default) {
+            val previewDrawing = ScribbleDashPath(
+                path = Path(_state.value.previewDrawing!!.path),
+                bounds = _state.value.previewDrawing!!.bounds
+            )
 
-        val userDrawing = _state.value.paths.toAndroidPath()
-        val normalizedUserDrawing = userDrawing
-            .normalizeForComparison(Size(500f, 500f), userDrawing.computeBounds())
-        val normalizedReferenceDrawing = previewDrawing.path
-            .normalizeForComparison(Size(500f, 500f), previewDrawing.bounds)
+            val userDrawing = _state.value.paths.toAndroidPath()
+            val normalizedUserDrawing = userDrawing
+                .normalizeForComparison(Size(500f, 500f), userDrawing.computeBounds())
+            val normalizedReferenceDrawing = previewDrawing.path
+                .normalizeForComparison(Size(500f, 500f), previewDrawing.bounds)
 
-        val difficultyMultiplier = when (_state.value.difficultyLevel) {
-            DifficultyLevel.BEGINNER -> 15f
-            DifficultyLevel.CHALLENGING -> 7f
-            DifficultyLevel.MASTER -> 4f
+            val difficultyMultiplier = when (_state.value.difficultyLevel) {
+                DifficultyLevel.BEGINNER -> 15f
+                DifficultyLevel.CHALLENGING -> 7f
+                DifficultyLevel.MASTER -> 4f
+            }
+
+            val userBitmap = normalizedUserDrawing.toBitmap(stroke = 3f)
+            val referenceBitmap =
+                normalizedReferenceDrawing.toBitmap(stroke = 3f * difficultyMultiplier)
+
+            val comparisonResult = bitmapExtensions.compareBitmaps(
+                drawing = userBitmap,
+                reference = referenceBitmap
+            )
+
+            val userDrawingLength = userDrawing.calculatePathLength()
+            val referenceDrawingLength = previewDrawing.path.calculatePathLength()
+            val lengthRatio = userDrawingLength / referenceDrawingLength
+
+            val lengthPenalty = if (lengthRatio < 0.7f) {
+                (0.7f - lengthRatio)
+            } else 0f
+
+            rawScore = comparisonResult - lengthPenalty
         }
-
-        val userBitmap = normalizedUserDrawing.toBitmap(stroke = 3f)
-        val referenceBitmap = normalizedReferenceDrawing.toBitmap(stroke = 3f * difficultyMultiplier)
-
-        val comparisonResult = bitmapExtensions.compareBitmaps(
-            drawing = userBitmap,
-            reference = referenceBitmap
-        )
-
-        val userDrawingLength = userDrawing.calculatePathLength()
-        val referenceDrawingLength = previewDrawing.path.calculatePathLength()
-        val lengthRatio = userDrawingLength / referenceDrawingLength
-
-        val lengthPenalty = if (lengthRatio < 0.7f) {
-            (0.7f - lengthRatio)
-        } else 0f
-
-        val rawScore = comparisonResult - lengthPenalty
-
         when(gameType) {
-            GameType.ONE_ROUND_WONDER,
-            GameType.ENDLESS_MODE ->  {
+            GameType.ONE_ROUND_WONDER ->  {
                 _state.update {
                     it.copy(
-                        score = rawScore.coerceIn(0f, 100f)
+                        finalScore = rawScore.coerceIn(0f, 100f)
                     )
                 }
             }
             GameType.SPEED_DRAW -> {
-                val currentScore = _state.value.score
+                val currentScore = _state.value.finalScore
                 var drawingCount = _state.value.drawingCounter
                 val newScore = rawScore.coerceIn(0f, 100f)
 
                 if (newScore >= 40) {
                     _state.update {
                         it.copy(
-                            score = (currentScore * drawingCount + newScore) / (drawingCount + 1),
+                            finalScore = (currentScore * drawingCount + newScore) / (drawingCount + 1),
                             drawingCounter = ++drawingCount
                         )
                     }
                 }
+            }
+            GameType.ENDLESS_MODE -> {
+                val currentScore = _state.value.finalScore
+                var drawingCount = _state.value.drawingCounter
+                val newScore = rawScore.coerceIn(0f, 100f)
+
+                if (newScore >= 70) {
+                    _state.update {
+                        it.copy(
+                            finalScore = (currentScore * drawingCount + newScore) / (drawingCount + 1),
+                            lastScore = newScore,
+                            drawingCounter = ++drawingCount
+                        )
+                    }
+                } else {
+                    _state.update { it.copy( lastScore = newScore ) }
+                }
+
             }
         }
     }
@@ -303,10 +332,20 @@ class GameplayViewModel(
     }
     private fun navigateToGameplayScreen() {
         viewModelScope.launch {
-            _state.update { it.copy(
-                remainingCountdownTime = 0L,
-                drawingCounter = 0
-            ) }
+            when (state.value.gameType) {
+                GameType.SPEED_DRAW -> {
+                    _state.update { it.copy(
+                        remainingCountdownTime = 0L,
+                        drawingCounter = 0
+                    ) }
+                }
+                GameType.ENDLESS_MODE -> {
+                    _state.update { it.copy(
+                        lastScore = 0f
+                    ) }
+                }
+                else -> { }
+            }
             eventChannel.send(GameplayEvent.NavigateToGameplayScreen(
                 gameType = _state.value.gameType,
                 difficultyLevel = _state.value.difficultyLevel))
@@ -316,20 +355,31 @@ class GameplayViewModel(
     private fun onDoneClick() {
         when(_state.value.gameType) {
             GameType.ONE_ROUND_WONDER -> {
-                compareDrawings(gameType = GameType.ONE_ROUND_WONDER)
                 viewModelScope.launch {
+                    compareDrawings(gameType = GameType.ONE_ROUND_WONDER)
                     eventChannel.send(GameplayEvent.NavigateToResult)
                 }
             }
             GameType.SPEED_DRAW -> {
-                speedDrawGameModeTimer.pause()
-                compareDrawings(gameType = GameType.SPEED_DRAW)
-                _state.update { it.copy(previewDrawing = _drawings.value.random()) }
-                showPreview()
-                clearCanvas()
+                viewModelScope.launch {
+                    speedDrawGameModeTimer.pause()
+                    compareDrawings(gameType = GameType.SPEED_DRAW)
+                    _state.update { it.copy(previewDrawing = _drawings.value.random()) }
+                    showPreview()
+                    clearCanvas()
+                }
             }
-            GameType.ENDLESS_MODE -> TODO()
+            GameType.ENDLESS_MODE -> {
+                viewModelScope.launch {
+                    compareDrawings(gameType = GameType.ENDLESS_MODE)
+                    eventChannel.send(GameplayEvent.NavigateToResult)
+                }
+            }
         }
     }
-
+    private fun navigateToSummaryScreen() {
+        viewModelScope.launch {
+            eventChannel.send(GameplayEvent.NavigateToSummary)
+        }
+    }
 }
