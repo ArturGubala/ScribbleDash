@@ -16,6 +16,7 @@ import com.scribbledash.core.presentation.navigation.ScribbleDashNavHost
 import com.scribbledash.core.presentation.navigation.ScribbleDashNavigation
 import com.scribbledash.core.presentation.navigation.isTopLevelDestinationInHierarchy
 import com.scribbledash.core.presentation.screens.difficultylevel.di.difficultyLevelViewModel
+import com.scribbledash.di.dataModule
 import com.scribbledash.gameplay.di.gameplayViewModelModule
 import com.scribbledash.home.di.homeViewModelModule
 import org.koin.android.ext.koin.androidContext
@@ -31,7 +32,8 @@ class ScribbleDashCore: Application() {
             modules(
                 homeViewModelModule,
                 gameplayViewModelModule,
-                difficultyLevelViewModel
+                difficultyLevelViewModel,
+                dataModule
             )
         }
     }
