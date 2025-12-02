@@ -15,7 +15,8 @@ data class GameplayState (
     val remainingCountdownTime: Long = 0L,
     val drawings: List<ScribbleDashPath> = emptyList(),
     val previewDrawing: ScribbleDashPath? = null,
-    val score: Float = 0f,
+    val finalScore: Float = 0f,
+    val lastScore: Float = 0f,
     val gameType: GameType = GameType.ONE_ROUND_WONDER,
     val difficultyLevel: DifficultyLevel = DifficultyLevel.BEGINNER,
     val drawingCounter: Short = 0

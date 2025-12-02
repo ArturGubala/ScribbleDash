@@ -14,4 +14,5 @@ interface GameplayAction {
     data object ShowPreview: GameplayAction
     data class OnTryAgainClick(val gameType: GameType): GameplayAction
     data object OnDrawAgainClick: GameplayAction
+    data object OnFinishClick: GameplayAction
 }
