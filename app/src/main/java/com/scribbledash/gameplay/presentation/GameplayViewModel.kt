@@ -8,7 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.scribbledash.core.domain.model.Drawings
 import com.scribbledash.core.presentation.utils.DifficultyLevel
 import com.scribbledash.core.presentation.utils.GameType
+import com.scribbledash.core.presentation.utils.StatisticsType
 import com.scribbledash.core.presentation.utils.getDrawableRawIdForDrawing
+import com.scribbledash.domain.repository.StatisticsRepository
 import com.scribbledash.gameplay.model.PathData
 import com.scribbledash.gameplay.model.ScribbleDashPath
 import com.scribbledash.gameplay.model.calculatePathLength
@@ -33,7 +35,8 @@ import kotlinx.coroutines.withContext
 
 class GameplayViewModel(
     private val vectorXmlParser: VectorXmlParser,
-    private val bitmapExtensions: BitmapExtensions
+    private val bitmapExtensions: BitmapExtensions,
+    private val statisticsRepository: StatisticsRepository
 ): ViewModel() {
 
     private val _state = MutableStateFlow(GameplayState())
@@ -87,6 +90,7 @@ class GameplayViewModel(
 
             viewModelScope.launch {
                 compareDrawings(gameType = GameType.SPEED_DRAW)
+                saveStatistics()
                 eventChannel.send(GameplayEvent.NavigateToSummary)
             }
         }
@@ -245,7 +249,7 @@ class GameplayViewModel(
 
     private suspend fun compareDrawings(gameType: GameType) {
         var rawScore = 0f
-        val comparisonResult = withContext(Dispatchers.Default) {
+        withContext(Dispatchers.Default) {
             val previewDrawing = ScribbleDashPath(
                 path = Path(_state.value.previewDrawing!!.path),
                 bounds = _state.value.previewDrawing!!.bounds
@@ -372,6 +376,7 @@ class GameplayViewModel(
             GameType.ENDLESS -> {
                 viewModelScope.launch {
                     compareDrawings(gameType = GameType.ENDLESS)
+                    saveStatistics()
                     eventChannel.send(GameplayEvent.NavigateToResult)
                 }
             }
@@ -380,6 +385,24 @@ class GameplayViewModel(
     private fun navigateToSummaryScreen() {
         viewModelScope.launch {
             eventChannel.send(GameplayEvent.NavigateToSummary)
+        }
+    }
+
+    private fun saveStatistics() {
+        val gameType = _state.value.gameType
+        val finalAccuracy = _state.value.finalScore
+        val drawingsCount = _state.value.drawingCounter.toFloat()
+
+        viewModelScope.launch {
+            val accuracyStat = statisticsRepository.getStatistics(gameType.name, StatisticsType.ACCURACY.name)
+            if (accuracyStat != null && finalAccuracy > accuracyStat.value) {
+                statisticsRepository.updateStatistics(accuracyStat.copy(value = finalAccuracy))
+            }
+
+            val countStat = statisticsRepository.getStatistics(gameType.name, StatisticsType.COUNT.name)
+            if (countStat != null && drawingsCount > countStat.value) {
+                statisticsRepository.updateStatistics(countStat.copy(value = drawingsCount))
+            }
         }
     }
 }

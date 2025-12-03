@@ -10,12 +10,12 @@ import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.core.presentation.utils.StatisticsType
 import com.scribbledash.data.local.converter.UShortConverter
 import com.scribbledash.data.local.dao.StatisticDao
-import com.scribbledash.data.local.entity.StatisticEntity
+import com.scribbledash.data.local.entity.StatisticsEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [StatisticEntity::class], version = 1, exportSchema = false)
+@Database(entities = [StatisticsEntity::class], version = 1, exportSchema = false)
 @TypeConverters(UShortConverter::class)
 abstract class ScribbleDashDatabase : RoomDatabase() {
 
@@ -31,8 +31,7 @@ abstract class ScribbleDashDatabase : RoomDatabase() {
                     context.applicationContext,
                     ScribbleDashDatabase::class.java,
                     "scribbledash_database"
-                )
-                .addCallback(ScribbleDashDatabaseCallback(context))
+                ).addCallback(ScribbleDashDatabaseCallback(CoroutineScope(Dispatchers.IO)))
                 .build()
                 INSTANCE = instance
                 instance
@@ -40,20 +39,20 @@ abstract class ScribbleDashDatabase : RoomDatabase() {
         }
 
         private class ScribbleDashDatabaseCallback(
-            private val context: Context
-        ) : RoomDatabase.Callback() {
+            private val scope: CoroutineScope
+        ) : Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
-                INSTANCE?.let {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        prePopulateDatabase(it.statisticDao())
+                scope.launch {
+                    INSTANCE?.let { database ->
+                        prePopulateDatabase(database.statisticDao())
                     }
                 }
             }
 
             suspend fun prePopulateDatabase(statisticDao: StatisticDao) {
                 val statistics = listOf(
-                    StatisticEntity(
+                    StatisticsEntity(
                         gameMode = GameType.SPEED_DRAW.name,
                         type = StatisticsType.ACCURACY.name,
                         descriptionResName = "speed_draw_accuracy_description",
@@ -61,7 +60,7 @@ abstract class ScribbleDashDatabase : RoomDatabase() {
                         displayOrder = 0u,
                         iconResName = "ic_hourglass"
                     ),
-                    StatisticEntity(
+                    StatisticsEntity(
                         gameMode = GameType.SPEED_DRAW.name,
                         type = StatisticsType.COUNT.name,
                         descriptionResName = "speed_draw_count_description",
@@ -69,7 +68,7 @@ abstract class ScribbleDashDatabase : RoomDatabase() {
                         displayOrder = 1u,
                         iconResName = "ic_bolt"
                     ),
-                    StatisticEntity(
+                    StatisticsEntity(
                         gameMode = GameType.ENDLESS.name,
                         type = StatisticsType.ACCURACY.name,
                         descriptionResName = "endless_accuracy_description",
@@ -77,7 +76,7 @@ abstract class ScribbleDashDatabase : RoomDatabase() {
                         displayOrder = 2u,
                         iconResName = "ic_high_score"
                     ),
-                    StatisticEntity(
+                    StatisticsEntity(
                         gameMode = GameType.ENDLESS.name,
                         type = StatisticsType.COUNT.name,
                         descriptionResName = "endless_count_description",

@@ -1,10 +1,10 @@
-package com.scribbledash.statistic.navigation
+package com.scribbledash.statistics.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.scribbledash.statistic.StatisticRoute
+import com.scribbledash.statistics.StatisticRoute
 import kotlinx.serialization.Serializable
 
 fun NavController.navigateToStatistic(navOptions: NavOptions? = null) = navigate(StatisticScreen, navOptions)

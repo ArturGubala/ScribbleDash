@@ -1,4 +1,4 @@
-package com.scribbledash.statistic.components
+package com.scribbledash.statistics.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
@@ -25,7 +25,7 @@ import com.scribbledash.R
 import com.scribbledash.ui.theme.ScribbleDashTheme
 
 @Composable
-fun StatisticCard(
+fun StatisticsCard(
     leadingIcon: @Composable (() -> Unit),
     trackedDescription: String,
     trackedValue: String,
@@ -43,7 +43,7 @@ fun StatisticCard(
                 color = Color.White,
                 shape = RoundedCornerShape(24.dp)
             )
-            .padding(12.dp)
+            .padding(start = 12.dp, top = 12.dp, end = 20.dp, bottom = 12.dp)
         ,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Absolute.spacedBy(12.dp)
@@ -59,7 +59,7 @@ fun StatisticCard(
             text = trackedValue,
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.width(110.dp)
+            modifier = Modifier.width(100.dp)
         )
     }
 }
@@ -83,9 +83,9 @@ fun StatisticCardIcon(
 
 @Preview
 @Composable
-fun StatisticCardPreview() {
+fun StatisticsCardPreview() {
     ScribbleDashTheme {
-        StatisticCard(
+        StatisticsCard(
             leadingIcon = {
                 StatisticCardIcon(
                     icon = R.drawable.ic_hourglass,
@@ -97,8 +97,8 @@ fun StatisticCardPreview() {
                         )
                 )
             },
-            trackedDescription = "Nothing to track...for now",
-            trackedValue = "1234%"
+            trackedDescription = "Most Good+ drawings in Speed Draw",
+            trackedValue = "123%"
         )
     }
 }

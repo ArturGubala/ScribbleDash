@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
     tableName = "statistics",
     indices = [Index(value = ["gameMode", "type"], unique = true)]
 )
-data class StatisticEntity(
+data class StatisticsEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val gameMode: String,

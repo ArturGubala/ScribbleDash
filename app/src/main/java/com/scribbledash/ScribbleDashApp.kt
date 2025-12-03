@@ -19,6 +19,7 @@ import com.scribbledash.core.presentation.screens.difficultylevel.di.difficultyL
 import com.scribbledash.di.dataModule
 import com.scribbledash.gameplay.di.gameplayViewModelModule
 import com.scribbledash.home.di.homeViewModelModule
+import com.scribbledash.statistics.di.statisticsViewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
@@ -33,7 +34,8 @@ class ScribbleDashCore: Application() {
                 homeViewModelModule,
                 gameplayViewModelModule,
                 difficultyLevelViewModel,
-                dataModule
+                dataModule,
+                statisticsViewModelModule
             )
         }
     }

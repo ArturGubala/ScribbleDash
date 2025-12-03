@@ -17,6 +17,11 @@
     <string name="try_again">TRY AGAIN</string>
     <string name="draw_again">DRAW AGAIN</string>
     <string name="finish">FINISH</string>
+    <string name="speed_draw_accuracy_description">Highest Speed Draw accuracy %</string>
+    <string name="speed_draw_count_description">Most Good+ drawings in Speed Draw</string>
+    <string name="endless_accuracy_description">Highest Endless Mode accuracy %</string>
+    <string name="endless_count_description">Most drawings completed in Endless Mode</string>
+
     <plurals name="seconds_left">
         <item quantity="one">%d second left</item>
         <item quantity="other">%d seconds left</item>

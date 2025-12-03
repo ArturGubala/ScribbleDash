@@ -8,7 +8,7 @@ import com.scribbledash.core.presentation.screens.difficultylevel.navigation.dif
 import com.scribbledash.gameplay.navigation.gameplayNavGraph
 import com.scribbledash.home.navigation.HomeScreen
 import com.scribbledash.home.navigation.homeScreen
-import com.scribbledash.statistic.navigation.statisticScreen
+import com.scribbledash.statistics.navigation.statisticScreen
 
 @Composable
 fun ScribbleDashNavHost(

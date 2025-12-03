@@ -12,7 +12,7 @@ import androidx.navigation.navOptions
 import com.scribbledash.core.presentation.navigation.TopLevelDestination
 import com.scribbledash.core.presentation.navigation.TopLevelDestination.*
 import com.scribbledash.home.navigation.navigateToHome
-import com.scribbledash.statistic.navigation.navigateToStatistic
+import com.scribbledash.statistics.navigation.navigateToStatistic
 
 @Composable
 fun rememberScribbleDashAppState(

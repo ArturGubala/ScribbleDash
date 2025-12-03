@@ -3,7 +3,7 @@ package com.scribbledash.core.presentation.navigation
 import androidx.compose.ui.graphics.Color
 import com.scribbledash.R
 import com.scribbledash.home.navigation.HomeScreen
-import com.scribbledash.statistic.navigation.StatisticScreen
+import com.scribbledash.statistics.navigation.StatisticScreen
 
 enum class TopLevelDestination(
     val destination: Any,

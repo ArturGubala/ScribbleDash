@@ -3,7 +3,7 @@ package com.scribbledash.domain.model
 import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.core.presentation.utils.StatisticsType
 
-data class Statistic(
+data class Statistics(
     val id: Int,
     val gameMode: GameType,
     val type: StatisticsType,
