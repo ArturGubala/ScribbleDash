@@ -62,4 +62,9 @@
     <string name="feedback_woohoo_8">You\'ve got skills! I\'m starting to think you might be a wizard with that pencil!</string>
     <string name="feedback_woohoo_9">This drawing deserves its own fan club! Can I be the president?</string>
     <string name="feedback_woohoo_10">Is there a gallery nearby? Because this masterpiece needs to be on display!</string>
+    <string name="new_high">NEW HIGH!</string>
+    <string name="statistics_dummy_title">Your Canvas Awaits</string>
+    <string name="statistics_dummy_description">Every great artist starts with a single stroke. Play a few rounds to etch your scores into history!</string>
+    <string name="time_s_up">Time’s up!</string>
+    <string name="next_drawing">NEXT DRAWING</string>
 </resources>

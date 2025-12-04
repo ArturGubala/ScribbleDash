@@ -104,18 +104,18 @@ class BitmapExtensions(private val context: Context) {
         }
 
         // TODO: testing
-        saveToGallery(
-            bitmap = comparisonBitmap,
-            fileName = "comparisonBitmap_${System.currentTimeMillis()}.png"
-        )
-        saveToGallery(
-            bitmap = drawing,
-            fileName = "drawing_${System.currentTimeMillis()}.png"
-        )
-        saveToGallery(
-            bitmap = reference,
-            fileName = "reference_${System.currentTimeMillis()}.png"
-        )
+//        saveToGallery(
+//            bitmap = comparisonBitmap,
+//            fileName = "comparisonBitmap_${System.currentTimeMillis()}.png"
+//        )
+//        saveToGallery(
+//            bitmap = drawing,
+//            fileName = "drawing_${System.currentTimeMillis()}.png"
+//        )
+//        saveToGallery(
+//            bitmap = reference,
+//            fileName = "reference_${System.currentTimeMillis()}.png"
+//        )
 
         if (visibleUserPixels == 0) return 0f
         val coveragePercentage = (matchingPixels.toFloat() / visibleUserPixels) * 100f
