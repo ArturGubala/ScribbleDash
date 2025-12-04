@@ -19,7 +19,9 @@ data class GameplayState (
     val lastScore: Float = 0f,
     val gameType: GameType = GameType.ONE_ROUND_WONDER,
     val difficultyLevel: DifficultyLevel = DifficultyLevel.BEGINNER,
-    val drawingCounter: Short = 0
+    val drawingCounter: Short = 0,
+    val isNewBestDrawings: Boolean = false,
+    val isNewBestAccuracy: Boolean = false
 ) {
     val isClearCanvasButtonActive: Boolean
         get() = paths.isNotEmpty()

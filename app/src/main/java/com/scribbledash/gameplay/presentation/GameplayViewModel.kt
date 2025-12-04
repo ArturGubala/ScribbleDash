@@ -41,9 +41,7 @@ class GameplayViewModel(
 
     private val _state = MutableStateFlow(GameplayState())
     val state = _state
-        .onStart {
-            loadDrawings()
-        }
+        .onStart { loadDrawings() }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000L),
@@ -334,6 +332,7 @@ class GameplayViewModel(
             eventChannel.send(GameplayEvent.NavigateToDifficultyLevelScreen(gameType = gameType))
         }
     }
+
     private fun navigateToGameplayScreen() {
         viewModelScope.launch {
             when (state.value.gameType) {
@@ -376,14 +375,15 @@ class GameplayViewModel(
             GameType.ENDLESS -> {
                 viewModelScope.launch {
                     compareDrawings(gameType = GameType.ENDLESS)
-                    saveStatistics()
                     eventChannel.send(GameplayEvent.NavigateToResult)
                 }
             }
         }
     }
+
     private fun navigateToSummaryScreen() {
         viewModelScope.launch {
+            saveStatistics()
             eventChannel.send(GameplayEvent.NavigateToSummary)
         }
     }
@@ -394,14 +394,16 @@ class GameplayViewModel(
         val drawingsCount = _state.value.drawingCounter.toFloat()
 
         viewModelScope.launch {
-            val accuracyStat = statisticsRepository.getStatistics(gameType.name, StatisticsType.ACCURACY.name)
-            if (accuracyStat != null && finalAccuracy > accuracyStat.value) {
-                statisticsRepository.updateStatistics(accuracyStat.copy(value = finalAccuracy))
+            val currentBestAccuracy = statisticsRepository.getStatistics(gameType.name, StatisticsType.ACCURACY.name)
+            if (currentBestAccuracy != null && finalAccuracy > currentBestAccuracy.value) {
+                statisticsRepository.updateStatistics(currentBestAccuracy.copy(value = finalAccuracy))
+                _state.update { it.copy(isNewBestAccuracy = true) }
             }
 
-            val countStat = statisticsRepository.getStatistics(gameType.name, StatisticsType.COUNT.name)
-            if (countStat != null && drawingsCount > countStat.value) {
-                statisticsRepository.updateStatistics(countStat.copy(value = drawingsCount))
+            val currentBestCount = statisticsRepository.getStatistics(gameType.name, StatisticsType.COUNT.name)
+            if (currentBestCount != null && drawingsCount > currentBestCount.value) {
+                statisticsRepository.updateStatistics(currentBestCount.copy(value = drawingsCount))
+                _state.update { it.copy(isNewBestDrawings = true) }
             }
         }
     }
