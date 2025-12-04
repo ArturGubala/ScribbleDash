@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,12 +30,18 @@ fun ScribbleDashDrawingCounter(
     modifier: Modifier = Modifier,
     backgroundColor: Color = Color(color = 0xFFEEE7E0),
     textColor: Color = Color(0xFF514437),
-    @DrawableRes icon: Int = R.drawable.ic_palette
+    @DrawableRes icon: Int = R.drawable.ic_palette,
+    isHighScore: Boolean = false
+
 ) {
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
+    Column(
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Box(
+            modifier = modifier,
+            contentAlignment = Alignment.Center
+        ) {
             Box(
                 modifier = Modifier
                     .width(60.dp)
@@ -63,6 +70,14 @@ fun ScribbleDashDrawingCounter(
                 modifier = Modifier
                     .align(alignment = Alignment.CenterStart)
             )
+        }
+        if (isHighScore) {
+            Text(
+                text = stringResource(R.string.new_high),
+                style = MaterialTheme.typography.labelSmall,
+                color = Color(0xFFA5978A)
+            )
+        }
     }
 }
 
@@ -86,6 +101,16 @@ fun ScribbleDashDrawingCounterPreview() {
                 backgroundColor = Color(color = 0xFFED6363),
                 textColor = Color.White,
                 icon = R.drawable.ic_palette_outlined
+            )
+
+            ScribbleDashDrawingCounter(
+                value = "0",
+                modifier = Modifier
+                    .width(78.dp),
+                backgroundColor = Color(color = 0xFFED6363),
+                textColor = Color.White,
+                icon = R.drawable.ic_palette_outlined,
+                isHighScore = true
             )
         }
     }

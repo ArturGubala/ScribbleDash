@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +32,8 @@ fun ScribbleDashScoreCard(
     feedbackTitle: String,
     feedbackDescription: String,
     modifier: Modifier = Modifier,
-    isHighScore: Boolean = false
+    showHighScoreBanner: Boolean,
+    showHighScoreDrawingLabel: Boolean
 ) {
     Column(
         modifier = modifier
@@ -51,13 +54,14 @@ fun ScribbleDashScoreCard(
                     shape = RoundedCornerShape(16.dp)
                 )
                 .padding(vertical = 16.dp),
-            contentAlignment = Alignment.TopCenter
+            contentAlignment = Alignment.TopCenter,
+
         ) {
             Text(
                 text = "${"%.0f".format(score)}%",
                 style = MaterialTheme.typography.displayLarge.copy(fontSize = 66.sp)
             )
-            if (isHighScore) {
+            if (showHighScoreDrawingLabel || showHighScoreBanner) {
                 ScribbleDashHighScoreBanner(
                     modifier = Modifier.offset(y = -(35).dp)
                 )
@@ -84,14 +88,15 @@ fun ScribbleDashScoreCard(
             }
         )
 
-        if (isHighScore) {
+        if (showHighScoreBanner) {
             ScribbleDashDrawingCounter(
                 value = drawings.toString(),
                 modifier = Modifier
                     .width(78.dp),
                 backgroundColor = Color(color = 0xFFED6363),
                 textColor = Color.White,
-                icon = R.drawable.ic_palette_outlined
+                icon = R.drawable.ic_palette_outlined,
+                isHighScore = showHighScoreDrawingLabel
             )
         } else {
             ScribbleDashDrawingCounter(
@@ -108,6 +113,7 @@ fun ScribbleDashScoreCard(
 private fun ScribbleDashScoreCardPreview() {
     ScribbleDashTheme {
         Column(
+            modifier = Modifier.verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
             ScribbleDashScoreCard(
@@ -115,14 +121,24 @@ private fun ScribbleDashScoreCardPreview() {
                 drawings = 5,
                 feedbackTitle = "Meh",
                 feedbackDescription = "This is what happens when you let a cat hold the pencil!",
-                isHighScore = false
+                showHighScoreBanner = false,
+                showHighScoreDrawingLabel = false
             )
             ScribbleDashScoreCard(
                 score = 79f,
                 drawings = 10,
                 feedbackTitle = "Good",
                 feedbackDescription = "Not too shabby! Keep at it, and soon you'll be the talk of the art world!",
-                isHighScore = true
+                showHighScoreBanner = false,
+                showHighScoreDrawingLabel = true
+            )
+            ScribbleDashScoreCard(
+                score = 79f,
+                drawings = 10,
+                feedbackTitle = "Good",
+                feedbackDescription = "Not too shabby! Keep at it, and soon you'll be the talk of the art world!",
+                showHighScoreBanner = true,
+                showHighScoreDrawingLabel = true
             )
         }
     }
