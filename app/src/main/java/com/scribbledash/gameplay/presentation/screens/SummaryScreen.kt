@@ -18,10 +18,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -39,6 +41,7 @@ import com.scribbledash.gameplay.presentation.GameplayAction
 import com.scribbledash.gameplay.presentation.GameplayEvent
 import com.scribbledash.gameplay.presentation.GameplayState
 import com.scribbledash.gameplay.presentation.GameplayViewModel
+import com.scribbledash.gameplay.utils.ScoreFeedback
 import com.scribbledash.gameplay.utils.sharedViewModel
 import com.scribbledash.home.navigation.HomeScreen
 import com.scribbledash.ui.theme.ScribbleDashTheme
@@ -84,6 +87,13 @@ private fun SummaryScreen(
     state: GameplayState,
     onAction: (GameplayAction) -> Unit,
 ) {
+    val randomFeedbackId = remember(state.finalScore) {
+        ScoreFeedback.getRandomFeedback(state.finalScore.toInt())
+    }
+    val scoreHeadline = remember(state.finalScore) {
+        ScoreFeedback.getScoreHeadline(state.finalScore.toInt())
+    }
+
     Scaffold(
         topBar = {
             ScribbleDashTopAppBar(
@@ -114,7 +124,7 @@ private fun SummaryScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             Text(
-                text = "Time’s up!",
+                text = stringResource(R.string.time_s_up),
                 style = MaterialTheme.typography.labelLarge
             )
 
@@ -126,9 +136,10 @@ private fun SummaryScreen(
                 ScribbleDashScoreCard(
                     score = state.finalScore,
                     drawings = state.drawingCounter,
-                    feedbackTitle = "Meh",
-                    feedbackDescription = "This is what happens when you let a cat hold the pencil!",
-                    isHighScore = true
+                    feedbackTitle = scoreHeadline,
+                    feedbackDescription = stringResource(randomFeedbackId),
+                    showHighScoreDrawingLabel = state.isNewBestDrawings,
+                    showHighScoreBanner = state.isNewBestAccuracy || state.isNewBestDrawings
                 )
             }
 

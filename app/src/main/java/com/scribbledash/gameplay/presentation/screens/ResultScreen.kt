@@ -52,47 +52,9 @@ import com.scribbledash.gameplay.presentation.GameplayAction
 import com.scribbledash.gameplay.presentation.GameplayEvent
 import com.scribbledash.gameplay.presentation.GameplayState
 import com.scribbledash.gameplay.presentation.GameplayViewModel
+import com.scribbledash.gameplay.utils.ScoreFeedback
 import com.scribbledash.gameplay.utils.sharedViewModel
 import com.scribbledash.home.navigation.HomeScreen
-
-val oopsFeedbackList = listOf(
-    R.string.feedback_oops_1,
-    R.string.feedback_oops_2,
-    R.string.feedback_oops_3,
-    R.string.feedback_oops_4,
-    R.string.feedback_oops_5,
-    R.string.feedback_oops_6,
-    R.string.feedback_oops_7,
-    R.string.feedback_oops_8,
-    R.string.feedback_oops_9,
-    R.string.feedback_oops_10,
-)
-
-val goodFeedbackList = listOf(
-    R.string.feedback_good_1,
-    R.string.feedback_good_2,
-    R.string.feedback_good_3,
-    R.string.feedback_good_4,
-    R.string.feedback_good_5,
-    R.string.feedback_good_6,
-    R.string.feedback_good_7,
-    R.string.feedback_good_8,
-    R.string.feedback_good_9,
-    R.string.feedback_good_10,
-)
-
-val woohooFeedbackList = listOf(
-    R.string.feedback_woohoo_1,
-    R.string.feedback_woohoo_2,
-    R.string.feedback_woohoo_3,
-    R.string.feedback_woohoo_4,
-    R.string.feedback_woohoo_5,
-    R.string.feedback_woohoo_6,
-    R.string.feedback_woohoo_7,
-    R.string.feedback_woohoo_8,
-    R.string.feedback_woohoo_9,
-    R.string.feedback_woohoo_10,
-)
 
 @SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
@@ -136,6 +98,18 @@ private fun ResultScreen(
     state: GameplayState,
     onAction: (GameplayAction) -> Unit,
 ) {
+    val score = when(state.gameType) {
+        GameType.ONE_ROUND_WONDER,
+        GameType.SPEED_DRAW -> state.finalScore.toInt()
+        GameType.ENDLESS -> state.lastScore.toInt()
+    }
+    val randomFeedbackId = remember(state.finalScore) {
+        ScoreFeedback.getRandomFeedback(score)
+    }
+    val scoreHeadline = remember(score) {
+        ScoreFeedback.getScoreHeadline(score)
+    }
+
     Scaffold(
         topBar = {
             ScribbleDashTopAppBar(
@@ -164,17 +138,6 @@ private fun ResultScreen(
                 .padding(start = 16.dp, end = 16.dp, top = 84.dp, bottom = 23.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val randomFeedbackId = remember(state.finalScore) {
-                getRandomFeedback(state.finalScore.toInt())
-            }
-
-            val scoreHeadline: String = when (state.finalScore.toInt()) {
-                in (0..39) -> "Oops"
-                in (40..69) -> "Meh"
-                in (70..79) -> "Good"
-                in (80..89) -> "Great"
-                else -> "Woohoo!"
-            }
 
             val primaryButtonText = when (state.gameType) {
                 GameType.ONE_ROUND_WONDER -> stringResource(R.string.try_again)
@@ -293,7 +256,7 @@ private fun ResultScreen(
             )
             if (state.gameType == GameType.ENDLESS && state.lastScore >= 70) {
                 ScribbleDashButton(
-                    description = "NEXT DRAWING",
+                    description = stringResource(R.string.next_drawing),
                     onClick = {
                         when(state.gameType) {
                             GameType.ENDLESS -> onAction(GameplayAction.OnDrawAgainClick)
@@ -309,13 +272,4 @@ private fun ResultScreen(
             }
         }
     }
-}
-
-fun getRandomFeedback(score: Int): Int {
-    val feedbackList = when {
-        score < 70 -> oopsFeedbackList
-        score < 90 -> goodFeedbackList
-        else -> woohooFeedbackList
-    }
-    return feedbackList.random()
 }
