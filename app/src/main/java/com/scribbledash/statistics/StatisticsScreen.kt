@@ -1,8 +1,8 @@
 package com.scribbledash.statistics
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -67,35 +66,29 @@ private fun StatisticScreen(
             .systemBarsPadding()
     ) { padding ->
         if (state.statistics.all { it.value == 0f }) {
-            Box(
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding),
-                contentAlignment = Alignment.Center
+                    .padding(horizontal = 32.dp)
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.padding(horizontal = 32.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_palette_outlined),
-                        contentDescription = null,
-                        modifier = Modifier.size(80.dp),
-                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
-                    )
-                    Text(
-                        text = "Your Canvas Awaits",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        text = "Every great artist starts with a single stroke. Play a few rounds to etch your scores into history!",
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                    )
-                }
+                Image(
+                    painter = painterResource(id = R.drawable.ic_palette),
+                    contentDescription = null,
+                    modifier = Modifier.size(80.dp)
+                )
+                Text(
+                    text = stringResource(R.string.statistics_dummy_title),
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color(0xFF7F7163)
+                )
+                Text(
+                    text = stringResource(R.string.statistics_dummy_description),
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
             }
         } else {
             LazyColumn(

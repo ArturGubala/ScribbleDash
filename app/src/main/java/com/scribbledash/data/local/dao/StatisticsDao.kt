@@ -11,7 +11,7 @@ import com.scribbledash.data.local.entity.StatisticsEntity
 interface StatisticDao {
 
     @Query("SELECT * FROM statistics ORDER BY displayOrder ASC")
-    fun getAllStatistics(): List<StatisticsEntity>
+    suspend fun getAllStatistics(): List<StatisticsEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(statistics: List<StatisticsEntity>)
