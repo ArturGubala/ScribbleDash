@@ -8,16 +8,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.scribbledash.R
 import com.scribbledash.core.presentation.components.ScribbleDashGameModeCard
@@ -27,6 +30,10 @@ import com.scribbledash.core.presentation.screens.difficultylevel.navigation.nav
 import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.core.presentation.utils.GradientScheme
 import com.scribbledash.core.presentation.utils.ObserveAsEvents
+import com.scribbledash.gameplay.components.ScribbleDashDrawingCounter
+import com.scribbledash.gameplay.navigation.GAMEPLAY_GRAPH_ROUTE
+import com.scribbledash.gameplay.presentation.GameplayViewModel
+import com.scribbledash.gameplay.utils.sharedViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -34,6 +41,8 @@ internal fun HomeRoute(
     navController: NavController,
     viewModel: HomeViewModel = koinViewModel()
 ) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             is HomeEvents.NavigateToDifficultyLevel -> {
@@ -43,21 +52,31 @@ internal fun HomeRoute(
     }
 
     HomeScreen(
-        onAction = viewModel::onAction
+        onAction = viewModel::onAction,
+        state = state
     )
 }
 
 @Composable
 private fun HomeScreen(
-    onAction: (HomeAction) -> Unit
+    onAction: (HomeAction) -> Unit,
+    state: HomeState
 ) {
     Scaffold(
         topBar = {
             ScribbleDashTopAppBar(
-                centerContent = {
+                leadingContent = {
                     Text(
                         text = stringResource(R.string.app_name),
                         style = MaterialTheme.typography.titleMedium,
+                    )
+                },
+                trailingContent = {
+                    ScribbleDashDrawingCounter(
+                        value = state.coins.toString(),
+                        modifier = Modifier
+                            .width(76.dp),
+                        icon = R.drawable.ic_coin
                     )
                 }
             )
