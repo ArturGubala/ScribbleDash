@@ -3,6 +3,7 @@ package com.scribbledash.core.presentation.navigation
 import androidx.compose.ui.graphics.Color
 import com.scribbledash.R
 import com.scribbledash.home.navigation.HomeScreen
+import com.scribbledash.shop.navigation.ShopScreen
 import com.scribbledash.statistics.navigation.StatisticScreen
 
 enum class TopLevelDestination(
@@ -27,7 +28,7 @@ enum class TopLevelDestination(
         unselectedColor = Color(0xFFE1D5CA)
     ),
     SHOP(
-        destination = HomeScreen,
+        destination = ShopScreen,
         selectedIcon = R.drawable.ic_shop,
         unselectedIcon = R.drawable.ic_shop,
         selectedColor = Color(0xFFAB5CFA),

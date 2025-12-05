@@ -8,6 +8,7 @@ import com.scribbledash.core.presentation.screens.difficultylevel.navigation.dif
 import com.scribbledash.gameplay.navigation.gameplayNavGraph
 import com.scribbledash.home.navigation.HomeScreen
 import com.scribbledash.home.navigation.homeScreen
+import com.scribbledash.shop.navigation.shopScreen
 import com.scribbledash.statistics.navigation.statisticScreen
 
 @Composable
@@ -24,6 +25,7 @@ fun ScribbleDashNavHost(
     ) {
         homeScreen(navController = navController)
         statisticScreen(onBackClick = { navController.popBackStack() })
+        shopScreen(navController = navController)
         difficultyLevelScreen(navController = navController)
         gameplayNavGraph(navController)
     }

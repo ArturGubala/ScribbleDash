@@ -12,6 +12,7 @@ import androidx.navigation.navOptions
 import com.scribbledash.core.presentation.navigation.TopLevelDestination
 import com.scribbledash.core.presentation.navigation.TopLevelDestination.*
 import com.scribbledash.home.navigation.navigateToHome
+import com.scribbledash.shop.navigation.navigateToShop
 import com.scribbledash.statistics.navigation.navigateToStatistic
 
 @Composable
@@ -45,7 +46,7 @@ class ScribbleDashAppState(
             when (topLevelDestination) {
                 HOME -> navController.navigateToHome(topLevelNavOptions)
                 STATISTIC -> navController.navigateToStatistic(topLevelNavOptions)
-                SHOP -> {}
+                SHOP -> navController.navigateToShop(topLevelNavOptions)
             }
         }
     }

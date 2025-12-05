@@ -8,17 +8,22 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.scribbledash.core.presentation.navigation.ScribbleDashNavHost
 import com.scribbledash.core.presentation.navigation.ScribbleDashNavigation
 import com.scribbledash.core.presentation.navigation.isTopLevelDestinationInHierarchy
 import com.scribbledash.core.presentation.screens.difficultylevel.di.difficultyLevelViewModel
+import com.scribbledash.core.presentation.utils.GradientScheme
 import com.scribbledash.di.dataModule
 import com.scribbledash.gameplay.di.gameplayViewModelModule
 import com.scribbledash.home.di.homeViewModelModule
+import com.scribbledash.shop.di.shopViewModelModule
 import com.scribbledash.statistics.di.statisticsViewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -35,7 +40,8 @@ class ScribbleDashCore: Application() {
                 gameplayViewModelModule,
                 difficultyLevelViewModel,
                 dataModule,
-                statisticsViewModelModule
+                statisticsViewModelModule,
+                shopViewModelModule
             )
         }
     }
@@ -61,10 +67,13 @@ fun ScribbleDashApp(
                 ScribbleDashNavigation(appState = appState)
             }
         },
-        containerColor = Color.Transparent
-    ) {
+        containerColor = Color.Transparent,
+        modifier = Modifier
+            .background(GradientScheme.PrimaryGradient)
+    ) { padding ->
         ScribbleDashNavHost(
             appState = appState,
+            modifier = Modifier.padding(padding)
         )
     }
 }

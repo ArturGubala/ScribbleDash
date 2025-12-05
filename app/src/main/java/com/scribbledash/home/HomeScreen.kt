@@ -80,7 +80,6 @@ private fun HomeScreen(
         },
         containerColor = Color.Transparent,
         modifier = Modifier
-            .background(GradientScheme.PrimaryGradient)
             .systemBarsPadding()
     ) { padding ->
         Column(
