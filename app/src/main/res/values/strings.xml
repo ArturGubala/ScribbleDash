@@ -21,6 +21,11 @@
     <string name="speed_draw_count_description">Most Good+ drawings in Speed Draw</string>
     <string name="endless_accuracy_description">Highest Endless Mode accuracy %</string>
     <string name="endless_count_description">Most drawings completed in Endless Mode</string>
+    <string name="new_high">NEW HIGH!</string>
+    <string name="statistics_dummy_title">Your Canvas Awaits</string>
+    <string name="statistics_dummy_description">Every great artist starts with a single stroke. Play a few rounds (Speed Draw or Endless Mode) to etch your scores into history!</string>
+    <string name="time_s_up">Time’s up!</string>
+    <string name="next_drawing">NEXT DRAWING</string>
 
     <plurals name="seconds_left">
         <item quantity="one">%d second left</item>
@@ -62,9 +67,5 @@
     <string name="feedback_woohoo_8">You\'ve got skills! I\'m starting to think you might be a wizard with that pencil!</string>
     <string name="feedback_woohoo_9">This drawing deserves its own fan club! Can I be the president?</string>
     <string name="feedback_woohoo_10">Is there a gallery nearby? Because this masterpiece needs to be on display!</string>
-    <string name="new_high">NEW HIGH!</string>
-    <string name="statistics_dummy_title">Your Canvas Awaits</string>
-    <string name="statistics_dummy_description">Every great artist starts with a single stroke. Play a few rounds to etch your scores into history!</string>
-    <string name="time_s_up">Time’s up!</string>
-    <string name="next_drawing">NEXT DRAWING</string>
+
 </resources>
