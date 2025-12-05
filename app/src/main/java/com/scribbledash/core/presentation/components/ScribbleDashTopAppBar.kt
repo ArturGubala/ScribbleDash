@@ -26,7 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.scribbledash.R
-import com.scribbledash.gameplay.components.ScribbleDashDrawingCounter
+import com.scribbledash.gameplay.components.ScribbleDashIconPill
 import com.scribbledash.gameplay.components.TimerDisplay
 import com.scribbledash.ui.theme.ScribbleDashTheme
 
@@ -87,7 +87,7 @@ fun ScribbleDashTopAppBarPreview() {
                         )
                     },
                 centerContent = {
-                    ScribbleDashDrawingCounter(
+                    ScribbleDashIconPill(
                         value = 5.toString(),
                         modifier = Modifier
                             .width(76.dp)
@@ -109,7 +109,7 @@ fun ScribbleDashTopAppBarPreview() {
             ScribbleDashTopAppBar(
                 leadingContent = null,
                 centerContent = {
-                    ScribbleDashDrawingCounter(
+                    ScribbleDashIconPill(
                         value = 5.toString(),
                         modifier = Modifier
                             .width(76.dp)

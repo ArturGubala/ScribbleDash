@@ -25,7 +25,7 @@ import com.scribbledash.R
 import com.scribbledash.ui.theme.ScribbleDashTheme
 
 @Composable
-fun ScribbleDashDrawingCounter(
+fun ScribbleDashIconPill(
     value: String,
     modifier: Modifier = Modifier,
     backgroundColor: Color = Color(color = 0xFFEEE7E0),
@@ -83,18 +83,25 @@ fun ScribbleDashDrawingCounter(
 
 @Preview
 @Composable
-fun ScribbleDashDrawingCounterPreview() {
+fun ScribbleDashIconPillPreview() {
     ScribbleDashTheme {
         Column(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            ScribbleDashDrawingCounter(
+            ScribbleDashIconPill(
                 value = "0",
                 modifier = Modifier
                     .width(76.dp)
             )
 
-            ScribbleDashDrawingCounter(
+            ScribbleDashIconPill(
+                value = "3000",
+                modifier = Modifier
+                    .width(76.dp),
+                icon = R.drawable.ic_coin
+            )
+
+            ScribbleDashIconPill(
                 value = "0",
                 modifier = Modifier
                     .width(78.dp),
@@ -103,7 +110,7 @@ fun ScribbleDashDrawingCounterPreview() {
                 icon = R.drawable.ic_palette_outlined
             )
 
-            ScribbleDashDrawingCounter(
+            ScribbleDashIconPill(
                 value = "0",
                 modifier = Modifier
                     .width(78.dp),

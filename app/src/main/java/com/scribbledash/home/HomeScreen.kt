@@ -30,10 +30,7 @@ import com.scribbledash.core.presentation.screens.difficultylevel.navigation.nav
 import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.core.presentation.utils.GradientScheme
 import com.scribbledash.core.presentation.utils.ObserveAsEvents
-import com.scribbledash.gameplay.components.ScribbleDashDrawingCounter
-import com.scribbledash.gameplay.navigation.GAMEPLAY_GRAPH_ROUTE
-import com.scribbledash.gameplay.presentation.GameplayViewModel
-import com.scribbledash.gameplay.utils.sharedViewModel
+import com.scribbledash.gameplay.components.ScribbleDashIconPill
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -72,7 +69,7 @@ private fun HomeScreen(
                     )
                 },
                 trailingContent = {
-                    ScribbleDashDrawingCounter(
+                    ScribbleDashIconPill(
                         value = state.coins.toString(),
                         modifier = Modifier
                             .width(76.dp),

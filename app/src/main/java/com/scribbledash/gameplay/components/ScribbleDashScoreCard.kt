@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -31,9 +32,10 @@ fun ScribbleDashScoreCard(
     drawings: Short,
     feedbackTitle: String,
     feedbackDescription: String,
-    modifier: Modifier = Modifier,
     showHighScoreBanner: Boolean,
-    showHighScoreDrawingLabel: Boolean
+    showHighScoreDrawingLabel: Boolean,
+    coins: Int,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
@@ -88,21 +90,31 @@ fun ScribbleDashScoreCard(
             }
         )
 
-        if (showHighScoreBanner) {
-            ScribbleDashDrawingCounter(
-                value = drawings.toString(),
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            if (showHighScoreBanner) {
+                ScribbleDashIconPill(
+                    value = drawings.toString(),
+                    modifier = Modifier
+                        .width(78.dp),
+                    backgroundColor = Color(color = 0xFFED6363),
+                    textColor = Color.White,
+                    icon = R.drawable.ic_palette_outlined,
+                    isHighScore = showHighScoreDrawingLabel
+                )
+            } else {
+                ScribbleDashIconPill(
+                    value = drawings.toString(),
+                    modifier = Modifier
+                        .width(76.dp)
+                )
+            }
+            ScribbleDashIconPill(
+                value = "+${coins}",
                 modifier = Modifier
-                    .width(78.dp),
-                backgroundColor = Color(color = 0xFFED6363),
-                textColor = Color.White,
-                icon = R.drawable.ic_palette_outlined,
-                isHighScore = showHighScoreDrawingLabel
-            )
-        } else {
-            ScribbleDashDrawingCounter(
-                value = drawings.toString(),
-                modifier = Modifier
-                    .width(76.dp)
+                    .width(76.dp),
+                icon = R.drawable.ic_coin
             )
         }
     }
@@ -122,7 +134,8 @@ private fun ScribbleDashScoreCardPreview() {
                 feedbackTitle = "Meh",
                 feedbackDescription = "This is what happens when you let a cat hold the pencil!",
                 showHighScoreBanner = false,
-                showHighScoreDrawingLabel = false
+                showHighScoreDrawingLabel = false,
+                coins = 10
             )
             ScribbleDashScoreCard(
                 score = 79f,
@@ -130,7 +143,8 @@ private fun ScribbleDashScoreCardPreview() {
                 feedbackTitle = "Good",
                 feedbackDescription = "Not too shabby! Keep at it, and soon you'll be the talk of the art world!",
                 showHighScoreBanner = false,
-                showHighScoreDrawingLabel = true
+                showHighScoreDrawingLabel = true,
+                coins = 10
             )
             ScribbleDashScoreCard(
                 score = 79f,
@@ -138,7 +152,8 @@ private fun ScribbleDashScoreCardPreview() {
                 feedbackTitle = "Good",
                 feedbackDescription = "Not too shabby! Keep at it, and soon you'll be the talk of the art world!",
                 showHighScoreBanner = true,
-                showHighScoreDrawingLabel = true
+                showHighScoreDrawingLabel = true,
+                coins = 10
             )
         }
     }

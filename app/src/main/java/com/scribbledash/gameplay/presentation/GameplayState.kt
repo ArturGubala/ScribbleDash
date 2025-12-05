@@ -21,7 +21,9 @@ data class GameplayState (
     val difficultyLevel: DifficultyLevel = DifficultyLevel.BEGINNER,
     val drawingCounter: Short = 0,
     val isNewBestDrawings: Boolean = false,
-    val isNewBestAccuracy: Boolean = false
+    val isNewBestAccuracy: Boolean = false,
+    val roundCoins: Int = 0,
+    val totalCoins: Int = 0
 ) {
     val isClearCanvasButtonActive: Boolean
         get() = paths.isNotEmpty()

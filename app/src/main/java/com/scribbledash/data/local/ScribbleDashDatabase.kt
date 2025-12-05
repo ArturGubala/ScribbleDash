@@ -10,16 +10,26 @@ import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.core.presentation.utils.StatisticsType
 import com.scribbledash.data.local.converter.UShortConverter
 import com.scribbledash.data.local.dao.StatisticDao
+import com.scribbledash.data.local.dao.WalletDao
 import com.scribbledash.data.local.entity.StatisticsEntity
+import com.scribbledash.data.local.entity.WalletEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [StatisticsEntity::class], version = 1, exportSchema = false)
+@Database(
+    entities = [
+        StatisticsEntity::class,
+        WalletEntity::class
+    ],
+    version = 1,
+    exportSchema = false
+)
 @TypeConverters(UShortConverter::class)
 abstract class ScribbleDashDatabase : RoomDatabase() {
 
     abstract fun statisticDao(): StatisticDao
+    abstract fun walletDao(): WalletDao
 
     companion object {
         @Volatile
@@ -39,18 +49,18 @@ abstract class ScribbleDashDatabase : RoomDatabase() {
         }
 
         private class ScribbleDashDatabaseCallback(
-            private val scope: CoroutineScope
+            private val scope: CoroutineScope,
         ) : Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
                 scope.launch {
                     INSTANCE?.let { database ->
-                        prePopulateDatabase(database.statisticDao())
+                        prePopulateDatabase(database.statisticDao(), database.walletDao())
                     }
                 }
             }
 
-            suspend fun prePopulateDatabase(statisticDao: StatisticDao) {
+            suspend fun prePopulateDatabase(statisticDao: StatisticDao, walletDao: WalletDao) {
                 val statistics = listOf(
                     StatisticsEntity(
                         gameMode = GameType.SPEED_DRAW.name,
@@ -86,6 +96,8 @@ abstract class ScribbleDashDatabase : RoomDatabase() {
                     )
                 )
                 statisticDao.insertAll(statistics)
+
+                walletDao.insertWallet(WalletEntity(id = 1, coins = 0))
             }
         }
     }

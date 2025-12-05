@@ -139,7 +139,8 @@ private fun SummaryScreen(
                     feedbackTitle = scoreHeadline,
                     feedbackDescription = stringResource(randomFeedbackId),
                     showHighScoreDrawingLabel = state.isNewBestDrawings,
-                    showHighScoreBanner = state.isNewBestAccuracy || state.isNewBestDrawings
+                    showHighScoreBanner = state.isNewBestAccuracy || state.isNewBestDrawings,
+                    coins = state.totalCoins
                 )
             }
 

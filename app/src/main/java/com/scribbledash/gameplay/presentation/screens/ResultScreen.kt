@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -42,6 +43,7 @@ import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.core.presentation.utils.ObserveAsEvents
 import com.scribbledash.gameplay.components.ScribbleDashButton
 import com.scribbledash.gameplay.components.ScribbleDashDrawingArea
+import com.scribbledash.gameplay.components.ScribbleDashIconPill
 import com.scribbledash.gameplay.model.ScribbleDashPath
 import com.scribbledash.gameplay.model.computeBounds
 import com.scribbledash.gameplay.model.toAndroidPath
@@ -237,6 +239,16 @@ private fun ResultScreen(
                     )
                 }
             )
+
+            if (state.gameType == GameType.ONE_ROUND_WONDER) {
+                Spacer(modifier = Modifier.height(24.dp))
+                ScribbleDashIconPill(
+                    value = "+${state.totalCoins}",
+                    modifier = Modifier
+                        .width(76.dp),
+                    icon = R.drawable.ic_coin
+                )
+            }
 
             Spacer(modifier = Modifier.weight(1f))
             ScribbleDashButton(

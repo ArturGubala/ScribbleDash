@@ -40,7 +40,7 @@ import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.core.presentation.utils.ObserveAsEvents
 import com.scribbledash.gameplay.components.ScribbleDashButton
 import com.scribbledash.gameplay.components.ScribbleDashDrawingArea
-import com.scribbledash.gameplay.components.ScribbleDashDrawingCounter
+import com.scribbledash.gameplay.components.ScribbleDashIconPill
 import com.scribbledash.gameplay.components.ScribbleDashIconButton
 import com.scribbledash.gameplay.components.ScribbleDashPreviewCounter
 import com.scribbledash.gameplay.components.TimerDisplay
@@ -132,7 +132,7 @@ private fun GameplayScreen(
                     if (state.gameType == GameType.SPEED_DRAW ||
                         state.gameType == GameType.ENDLESS) {
                         {
-                            ScribbleDashDrawingCounter(
+                            ScribbleDashIconPill(
                                 value = state.drawingCounter.toString(),
                                 modifier = Modifier
                                     .width(76.dp)

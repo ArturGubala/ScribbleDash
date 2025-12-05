@@ -11,6 +11,7 @@ import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.core.presentation.utils.StatisticsType
 import com.scribbledash.core.presentation.utils.getDrawableRawIdForDrawing
 import com.scribbledash.domain.repository.StatisticsRepository
+import com.scribbledash.domain.repository.WalletRepository
 import com.scribbledash.gameplay.model.PathData
 import com.scribbledash.gameplay.model.ScribbleDashPath
 import com.scribbledash.gameplay.model.calculatePathLength
@@ -19,6 +20,7 @@ import com.scribbledash.gameplay.model.normalizeForComparison
 import com.scribbledash.gameplay.model.toAndroidPath
 import com.scribbledash.gameplay.model.toBitmap
 import com.scribbledash.gameplay.utils.BitmapExtensions
+import com.scribbledash.gameplay.utils.CoinRewardHelper
 import com.scribbledash.gameplay.utils.CountdownTimer
 import com.scribbledash.gameplay.utils.VectorXmlParser
 import kotlinx.coroutines.Dispatchers
@@ -36,7 +38,8 @@ import kotlinx.coroutines.withContext
 class GameplayViewModel(
     private val vectorXmlParser: VectorXmlParser,
     private val bitmapExtensions: BitmapExtensions,
-    private val statisticsRepository: StatisticsRepository
+    private val statisticsRepository: StatisticsRepository,
+    private val walletRepository: WalletRepository
 ): ViewModel() {
 
     private val _state = MutableStateFlow(GameplayState())
@@ -284,11 +287,22 @@ class GameplayViewModel(
 
             rawScore = comparisonResult - lengthPenalty
         }
+
         when(gameType) {
             GameType.ONE_ROUND_WONDER ->  {
+                val finalScore = rawScore.coerceIn(0f, 100f)
+                val coinsEarned = CoinRewardHelper.fromScoreAndDifficulty(
+                    score = finalScore.toInt(),
+                    gameDifficultyLevel = _state.value.difficultyLevel
+                )
+
+                walletRepository.addCoins(coinsEarned)
+
                 _state.update {
                     it.copy(
-                        finalScore = rawScore.coerceIn(0f, 100f)
+                        finalScore = finalScore,
+                        roundCoins = coinsEarned,
+                        totalCoins = coinsEarned
                     )
                 }
             }
@@ -297,11 +311,27 @@ class GameplayViewModel(
                 var drawingCount = _state.value.drawingCounter
                 val newScore = rawScore.coerceIn(0f, 100f)
 
+                val coinsEarned = CoinRewardHelper.fromScoreAndDifficulty(
+                    score = newScore.toInt(),
+                    gameDifficultyLevel = _state.value.difficultyLevel
+                )
+
+                walletRepository.addCoins(coinsEarned)
+
                 if (newScore >= 40) {
                     _state.update {
                         it.copy(
                             finalScore = (currentScore * drawingCount + newScore) / (drawingCount + 1),
-                            drawingCounter = ++drawingCount
+                            drawingCounter = ++drawingCount,
+                            roundCoins = coinsEarned,
+                            totalCoins = it.totalCoins + coinsEarned
+                        )
+                    }
+                } else {
+                    _state.update {
+                        it.copy(
+                            roundCoins = coinsEarned,
+                            totalCoins = it.totalCoins + coinsEarned
                         )
                     }
                 }
@@ -311,18 +341,32 @@ class GameplayViewModel(
                 var drawingCount = _state.value.drawingCounter
                 val newScore = rawScore.coerceIn(0f, 100f)
 
+                val coinsEarned = CoinRewardHelper.fromScoreAndDifficulty(
+                    score = newScore.toInt(),
+                    gameDifficultyLevel = _state.value.difficultyLevel
+                )
+
+                walletRepository.addCoins(coinsEarned)
+
                 if (newScore >= 70) {
                     _state.update {
                         it.copy(
                             finalScore = (currentScore * drawingCount + newScore) / (drawingCount + 1),
                             lastScore = newScore,
-                            drawingCounter = ++drawingCount
+                            drawingCounter = ++drawingCount,
+                            roundCoins = coinsEarned,
+                            totalCoins = it.totalCoins + coinsEarned
                         )
                     }
                 } else {
-                    _state.update { it.copy( lastScore = newScore ) }
+                    _state.update {
+                        it.copy(
+                            lastScore = newScore,
+                            roundCoins = coinsEarned,
+                            totalCoins = it.totalCoins + coinsEarned
+                        )
+                    }
                 }
-
             }
         }
     }
