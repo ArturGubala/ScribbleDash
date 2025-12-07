@@ -1,25 +1,18 @@
 package com.scribbledash.shop
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.interaction.InteractionSource
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.navigationBarsIgnoringVisibility
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryTabRow
@@ -28,31 +21,23 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.scribbledash.R
 import com.scribbledash.core.presentation.components.ScribbleDashTopAppBar
-import com.scribbledash.core.presentation.utils.GradientScheme
 import com.scribbledash.core.presentation.utils.ObserveAsEvents
 import com.scribbledash.gameplay.components.ScribbleDashIconPill
 import com.scribbledash.ui.theme.ScribbleDashTheme
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -73,12 +58,15 @@ internal fun ShopRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 private fun ShopScreen(
     onAction: (ShopAction) -> Unit,
     state: ShopState,
 ) {
+    val pagerState = rememberPagerState(pageCount = { Destination.entries.size })
+    val coroutineScope = rememberCoroutineScope()
+
     Scaffold(
         topBar = {
             ScribbleDashTopAppBar(
@@ -109,67 +97,100 @@ private fun ShopScreen(
                 .padding(padding)
                 .padding(start = 16.dp, end = 16.dp)
         ) {
+            ShopTabRow(
+                selectedDestination = pagerState.currentPage,
+                onDestinationSelected = { index, _ ->
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(index)
+                    }
+                }
+            )
 
-            val navController = rememberNavController()
-            val startDestination = Destination.SONGS
-            var selectedDestination by rememberSaveable { mutableIntStateOf(startDestination.ordinal) }
-
-            SecondaryTabRow(
-                selectedTabIndex = selectedDestination,
-                containerColor = Color.Transparent,
-                indicator = {
-                    TabRowDefaults.SecondaryIndicator(
-                        color = Color.Transparent
-                    )
-                },
-                divider = { }
-            ) {
-                Destination.entries.forEachIndexed { index, destination ->
-                    val selected = selectedDestination == index
-                    Tab(
-                        selected = selected,
-                        onClick = {
-                            navController.navigate(route = destination.route)
-                            selectedDestination = index
-                        },
-                        modifier = Modifier
-                            .padding(
-                                start = if (index == 0) 0.dp else 4.dp,
-                                end = if (index == 0) 4.dp else 0.dp
-                            )
-                            .background(
-                                color = if (selected) Color(0xFFEEE7E0) else Color(0x80EEE7E0),
-                                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                            )
-                            .then(
-                                if (!selected) {
-                                    Modifier.drawBehind {
-                                        val strokeWidth = 4.dp.toPx()
-                                        drawLine(
-                                            color = Color(0xFFFEFAF6),
-                                            start = Offset(0f, size.height),
-                                            end = Offset(size.width, size.height),
-                                            strokeWidth = strokeWidth
-                                        )
-                                    }
-                                } else {
-                                    Modifier
-                                }
-                            ),
-                        text = {
-                            Text(
-                                text = destination.label,
-                                maxLines = 2
-                            )
-                        }
-                    )
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize()
+            ) { page ->
+                when (Destination.entries[page]) {
+                    Destination.SONGS -> SongsScreen()
+                    Destination.ALBUM -> AlbumScreen()
                 }
             }
-            AppNavHost(navController, startDestination)
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ShopTabRow(
+    selectedDestination: Int,
+    onDestinationSelected: (Int, Destination) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    SecondaryTabRow(
+        selectedTabIndex = selectedDestination,
+        containerColor = Color.Transparent,
+        indicator = {
+            TabRowDefaults.SecondaryIndicator(
+                color = Color.Transparent
+            )
+        },
+        divider = { },
+        modifier = modifier
+    ) {
+        Destination.entries.forEachIndexed { index, destination ->
+            ShopTab(
+                destination = destination,
+                selected = selectedDestination == index,
+                onClick = { onDestinationSelected(index, destination) },
+                isFirst = index == 0
+            )
+        }
+    }
+}
+
+@Composable
+private fun ShopTab(
+    destination: Destination,
+    selected: Boolean,
+    onClick: () -> Unit,
+    isFirst: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Tab(
+        selected = selected,
+        onClick = onClick,
+        modifier = modifier
+            .padding(
+                start = if (isFirst) 0.dp else 4.dp,
+                end = if (isFirst) 4.dp else 0.dp
+            )
+            .background(
+                color = if (selected) Color(0xFFEEE7E0) else Color(0x80EEE7E0),
+                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+            )
+            .then(
+                if (!selected) {
+                    Modifier.drawBehind {
+                        val strokeWidth = 4.dp.toPx()
+                        drawLine(
+                            color = Color(0xFFFEFAF6),
+                            start = Offset(0f, size.height),
+                            end = Offset(size.width, size.height),
+                            strokeWidth = strokeWidth
+                        )
+                    }
+                } else {
+                    Modifier
+                }
+            ),
+        text = {
+            Text(
+                text = destination.label,
+                maxLines = 2
+            )
+        }
+    )
+}
 
 @Preview
 @Composable
@@ -189,28 +210,6 @@ enum class Destination(
 ) {
     SONGS("songs", "Songs", "Songs"),
     ALBUM("album", "Album", "Album")
-}
-
-
-@Composable
-fun AppNavHost(
-    navController: NavHostController,
-    startDestination: Destination,
-    modifier: Modifier = Modifier
-) {
-    NavHost(
-        navController,
-        startDestination = startDestination.route
-    ) {
-        Destination.entries.forEach { destination ->
-            composable(destination.route) {
-                when (destination) {
-                    Destination.SONGS -> SongsScreen()
-                    Destination.ALBUM -> AlbumScreen()
-                }
-            }
-        }
-    }
 }
 
 @Composable
