@@ -67,6 +67,13 @@ val Typography = Typography(
         lineHeight = 24.sp,
         color = Text2
     ),
+    labelSmall = TextStyle(
+        fontFamily = Outfit,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 14.sp,
+        lineHeight = 18.sp,
+        color = Text2
+    ),
     headlineSmall = TextStyle(
         fontFamily = BagelFatOne,
         fontWeight = FontWeight.Normal,
