@@ -3,13 +3,16 @@ package com.scribbledash.gameplay.presentation
 import android.graphics.Path
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.scribbledash.core.domain.model.Drawings
 import com.scribbledash.core.presentation.utils.DifficultyLevel
 import com.scribbledash.core.presentation.utils.GameType
+import com.scribbledash.core.presentation.utils.ShopItemType
 import com.scribbledash.core.presentation.utils.StatisticsType
 import com.scribbledash.core.presentation.utils.getDrawableRawIdForDrawing
+import com.scribbledash.domain.repository.ShopRepository
 import com.scribbledash.domain.repository.StatisticsRepository
 import com.scribbledash.domain.repository.WalletRepository
 import com.scribbledash.gameplay.model.PathData
@@ -39,12 +42,16 @@ class GameplayViewModel(
     private val vectorXmlParser: VectorXmlParser,
     private val bitmapExtensions: BitmapExtensions,
     private val statisticsRepository: StatisticsRepository,
-    private val walletRepository: WalletRepository
+    private val walletRepository: WalletRepository,
+    private val shopRepository: ShopRepository
 ): ViewModel() {
 
     private val _state = MutableStateFlow(GameplayState())
     val state = _state
-        .onStart { loadDrawings() }
+        .onStart {
+            loadDrawings()
+            loadUserCanvasSetup()
+        }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000L),
@@ -244,6 +251,30 @@ class GameplayViewModel(
                     drawings = drawings,
                     previewDrawing = drawings.random()
                 )
+            }
+        }
+    }
+
+    private fun loadUserCanvasSetup() {
+        viewModelScope.launch {
+            val shopItemPenColor = shopRepository.getSelectedItemByType(ShopItemType.PEN_COLOR)
+            val shopItemBackgroundColor = shopRepository.getSelectedItemByType(ShopItemType.CANVAS_BACKGROUND)
+            val shopItemTexture = shopRepository.getSelectedItemByType(ShopItemType.CANVAS_BACKGROUND)
+
+            shopItemPenColor.let { item ->
+                if (item?.previewColor != null) {
+                    _state.update { it.copy(strokeColor = item.previewColor) }
+                }
+            }
+            shopItemBackgroundColor.let { item ->
+                if (item?.previewBackgroundColor != null) {
+                    _state.update { it.copy(backgroundColor = item.previewBackgroundColor) }
+                }
+            }
+            shopItemTexture.let { item ->
+                if (item?.previewBackgroundImage != null) {
+                    _state.update { it.copy(backgroundTexture = item.previewBackgroundImage) }
+                }
             }
         }
     }

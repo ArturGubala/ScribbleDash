@@ -1,6 +1,7 @@
 package com.scribbledash.gameplay.components
 
 import android.graphics.Path
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,8 +14,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.AndroidPath
@@ -25,9 +28,12 @@ import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import com.scribbledash.R
 import com.scribbledash.gameplay.presentation.GameplayAction
 import com.scribbledash.gameplay.model.PathData
 import com.scribbledash.gameplay.model.ScribbleDashPath
@@ -45,7 +51,9 @@ fun ScribbleDashDrawingArea(
     onAction: (GameplayAction) -> Unit,
     modifier: Modifier = Modifier,
     strokeColor: Color = Color.Black,
-    canDrawing: Boolean = true
+    canDrawing: Boolean = true,
+    backgroundColor: Color = Color.White,
+    @DrawableRes backgroundTexture: Int? = null
 ) {
     Box(
         modifier = modifier
@@ -64,8 +72,19 @@ fun ScribbleDashDrawingArea(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    color = Color.White,
+                .clip(shape = RoundedCornerShape(24.dp))
+                .then(
+                    if (backgroundTexture != null) {
+                        Modifier
+                            .paint(
+                                painter = painterResource(id = backgroundTexture),
+                                contentScale = ContentScale.FillBounds
+                            )
+                    } else {
+                        Modifier.background(
+                            color = backgroundColor,
+                        )
+                    }
                 )
                 .border(
                     width = 1.dp,

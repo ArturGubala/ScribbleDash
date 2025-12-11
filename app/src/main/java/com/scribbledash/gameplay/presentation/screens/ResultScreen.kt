@@ -197,7 +197,10 @@ private fun ResultScreen(
                             exampleDrawing = ScribbleDashPath(state.paths.toAndroidPath(), state.paths.toAndroidPath().computeBounds(   )),
                             onAction = onAction,
                             modifier = Modifier.size(160.dp),
-                            canDrawing = false
+                            strokeColor = state.strokeColor,
+                            canDrawing = false,
+                            backgroundColor = state.backgroundColor,
+                            backgroundTexture = state.backgroundTexture
                         )
                     }
 

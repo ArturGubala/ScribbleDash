@@ -211,7 +211,10 @@ private fun GameplayScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
-                    canDrawing = canDrawing
+                    strokeColor = state.strokeColor,
+                    canDrawing = canDrawing,
+                    backgroundColor = state.backgroundColor,
+                    backgroundTexture = state.backgroundTexture
                 )
                 Spacer(modifier = Modifier.height(192.dp))
                 Row(

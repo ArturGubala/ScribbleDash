@@ -1,5 +1,6 @@
 package com.scribbledash.gameplay.presentation
 
+import androidx.compose.ui.graphics.Color
 import com.scribbledash.core.presentation.utils.DifficultyLevel
 import com.scribbledash.core.presentation.utils.GameType
 import com.scribbledash.gameplay.model.PathData
@@ -23,7 +24,10 @@ data class GameplayState (
     val isNewBestDrawings: Boolean = false,
     val isNewBestAccuracy: Boolean = false,
     val roundCoins: Int = 0,
-    val totalCoins: Int = 0
+    val totalCoins: Int = 0,
+    val strokeColor: Color = Color.Black,
+    val backgroundColor: Color = Color.White,
+    val backgroundTexture: Int? = null
 ) {
     val isClearCanvasButtonActive: Boolean
         get() = paths.isNotEmpty()
