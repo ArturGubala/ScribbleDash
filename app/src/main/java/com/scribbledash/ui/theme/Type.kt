@@ -70,7 +70,7 @@ val Typography = Typography(
     labelSmall = TextStyle(
         fontFamily = Outfit,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 14.sp,
+        fontSize = 12.sp,
         lineHeight = 18.sp,
         color = Text2
     ),
