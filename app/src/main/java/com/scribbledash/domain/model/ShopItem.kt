@@ -14,5 +14,6 @@ data class ShopItem(
     // I know that domain should be pure kotlin but...
     @param:DrawableRes val previewBackgroundImage: Int? = null,
     val isPurchased: Boolean = false,
+    val isSelected: Boolean = false,
     val cost: Int = 0
 )

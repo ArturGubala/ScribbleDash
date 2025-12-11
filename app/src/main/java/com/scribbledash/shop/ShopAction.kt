@@ -1,6 +1,8 @@
 package com.scribbledash.shop
 
-interface ShopAction {
-    data object OnTabClick : ShopAction
-    data object OnItemClick : ShopAction
+import com.scribbledash.core.presentation.utils.ShopItemType
+
+sealed interface ShopAction {
+    data class OnTabSelected(val tab: ShopItemType) : ShopAction
+    data class OnItemClicked(val itemId: String) : ShopAction
 }
