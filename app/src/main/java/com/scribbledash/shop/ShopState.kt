@@ -8,5 +8,8 @@ data class ShopState(
     val selectedTab: ShopItemType = ShopItemType.PEN_COLOR,
     val penItems: List<ShopItem> = emptyList(),
     val canvasItems: List<ShopItem> = emptyList(),
-    val isLoading: Boolean = false
-)
+    val purchasingItemId: String? = null
+) {
+    val allItems: List<ShopItem>
+        get() = penItems + canvasItems
+}
