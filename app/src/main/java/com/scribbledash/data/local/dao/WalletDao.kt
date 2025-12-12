@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.scribbledash.data.local.entity.WalletEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WalletDao {
@@ -23,6 +24,9 @@ interface WalletDao {
 
     @Query("UPDATE wallet SET coins = coins - :amount WHERE id = 1")
     suspend fun deductCoins(amount: Int)
+
+    @Query("SELECT * FROM wallet WHERE id = 1")
+    fun observeWallet(): Flow<WalletEntity?>
 
     @Query("UPDATE wallet SET coins = :amount WHERE id = 1")
     suspend fun setCoins(amount: Int)
