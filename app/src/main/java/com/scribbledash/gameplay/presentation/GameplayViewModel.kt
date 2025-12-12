@@ -3,7 +3,6 @@ package com.scribbledash.gameplay.presentation
 import android.graphics.Path
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.scribbledash.core.domain.model.Drawings
@@ -31,6 +30,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -63,6 +64,38 @@ class GameplayViewModel(
 
     private val eventChannel = Channel<GameplayEvent>()
     val events = eventChannel.receiveAsFlow()
+
+    private val speedDrawGameModeTimer = CountdownTimer(
+        coroutineScope = viewModelScope,
+        onTick = { time ->
+            _state.update { it.copy(remainingCountdownTime = time) }
+        },
+        onFinished = {
+            viewModelScope.launch {
+                compareDrawings(gameType = GameType.SPEED_DRAW)
+                saveStatistics()
+                eventChannel.send(GameplayEvent.NavigateToSummary)
+            }
+        }
+    )
+
+    private val previewTimer = CountdownTimer(
+        coroutineScope = viewModelScope,
+        onTick = { time ->
+            _state.update { it.copy(remainingPreviewTime = time) }
+        },
+        onFinished = {
+            _state.update { it.copy(isPreviewVisible = false) }
+            if (_state.value.gameType == GameType.SPEED_DRAW) {
+                if (_state.value.remainingCountdownTime <= 0) {
+                    speedDrawGameModeTimer.start(45000)
+                } else {
+                    speedDrawGameModeTimer.resume()
+                }
+            }
+        }
+    )
+
     fun setGameConfiguration(gameType: GameType, difficultyLevel: DifficultyLevel) {
         when (_state.value.gameType) {
             GameType.ONE_ROUND_WONDER -> {
@@ -84,46 +117,6 @@ class GameplayViewModel(
             }
         }
     }
-
-    private val speedDrawGameModeTimer = CountdownTimer(
-        coroutineScope = viewModelScope,
-        onTick = { time ->
-            _state.update {
-                it.copy(
-                    remainingCountdownTime = time
-                )
-            }
-        },
-        onFinished = {
-
-            viewModelScope.launch {
-                compareDrawings(gameType = GameType.SPEED_DRAW)
-                saveStatistics()
-                eventChannel.send(GameplayEvent.NavigateToSummary)
-            }
-        }
-    )
-
-    private val previewTimer = CountdownTimer(
-        coroutineScope = viewModelScope,
-        onTick = { time ->
-            _state.update {
-                it.copy(
-                    remainingPreviewTime = time
-                )
-            }
-        },
-        onFinished = {
-            _state.update { it.copy(isPreviewVisible = false) }
-            if (_state.value.gameType == GameType.SPEED_DRAW) {
-                if (_state.value.remainingCountdownTime <= 0) {
-                    speedDrawGameModeTimer.start(45000)
-                } else {
-                    speedDrawGameModeTimer.resume()
-                }
-            }
-        }
-    )
 
     fun onAction(action: GameplayAction) {
         when(action) {
@@ -148,20 +141,20 @@ class GameplayViewModel(
     }
 
     private fun onStartDrawing() {
-        _state.update { it.copy(
-            currentPath = PathData(
-                path = emptyList()
-            )
-        ) }
+        _state.update {
+            it.copy(currentPath = PathData(path = emptyList()))
+        }
     }
 
     private fun onDrawing(offset: Offset) {
         val currentPathData = state.value.currentPath ?: return
-        _state.update { it.copy(
-            currentPath = currentPathData.copy(
-                path = currentPathData.path + offset
+        _state.update {
+            it.copy(
+                currentPath = currentPathData.copy(
+                    path = currentPathData.path + offset
+                )
             )
-        ) }
+        }
     }
 
     private fun onStopDrawing() {
@@ -170,12 +163,14 @@ class GameplayViewModel(
             if (size >= 5) removeFirst()
             addLast(currentPathData)
         }
-        _state.update { it.copy(
-            currentPath = null,
-            paths = it.paths + currentPathData,
-            undoPaths = ArrayDeque(newUndoPaths),
-            redoPaths = ArrayDeque()
-        ) }
+        _state.update {
+            it.copy(
+                currentPath = null,
+                paths = it.paths + currentPathData,
+                undoPaths = ArrayDeque(newUndoPaths),
+                redoPaths = ArrayDeque()
+            )
+        }
     }
 
     private fun onUndoClick() {
@@ -261,27 +256,32 @@ class GameplayViewModel(
             val shopItemBackgroundColor = shopRepository.getSelectedItemByType(ShopItemType.CANVAS_BACKGROUND)
             val shopItemTexture = shopRepository.getSelectedItemByType(ShopItemType.CANVAS_BACKGROUND)
 
-            shopItemPenColor.let { item ->
-                if (item?.previewColor != null) {
-                    _state.update { it.copy(strokeColor = item.previewColor) }
-                }
+            shopItemPenColor?.previewColor?.let { color ->
+                _state.update { it.copy(strokeColor = color) }
             }
-            shopItemBackgroundColor.let { item ->
-                if (item?.previewBackgroundColor != null) {
-                    _state.update { it.copy(backgroundColor = item.previewBackgroundColor) }
-                }
+
+            shopItemBackgroundColor?.previewBackgroundColor?.let { bgColor ->
+                _state.update { it.copy(backgroundColor = bgColor) }
             }
-            shopItemTexture.let { item ->
-                if (item?.previewBackgroundImage != null) {
-                    _state.update { it.copy(backgroundTexture = item.previewBackgroundImage) }
-                }
+
+            shopItemTexture?.previewBackgroundImage?.let { texture ->
+                _state.update { it.copy(backgroundTexture = texture) }
             }
         }
     }
 
     private suspend fun compareDrawings(gameType: GameType) {
-        var rawScore = 0f
-        withContext(Dispatchers.Default) {
+        val rawScore = calculateDrawingScore()
+
+        when(gameType) {
+            GameType.ONE_ROUND_WONDER -> handleOneRoundWonderScore(rawScore)
+            GameType.SPEED_DRAW -> handleSpeedDrawScore(rawScore)
+            GameType.ENDLESS -> handleEndlessScore(rawScore)
+        }
+    }
+
+    private suspend fun calculateDrawingScore(): Float {
+        return withContext(Dispatchers.Default) {
             val previewDrawing = ScribbleDashPath(
                 path = Path(_state.value.previewDrawing!!.path),
                 bounds = _state.value.previewDrawing!!.bounds
@@ -316,88 +316,88 @@ class GameplayViewModel(
                 (0.7f - lengthRatio)
             } else 0f
 
-            rawScore = comparisonResult - lengthPenalty
+            comparisonResult - lengthPenalty
         }
+    }
 
-        when(gameType) {
-            GameType.ONE_ROUND_WONDER ->  {
-                val finalScore = rawScore.coerceIn(0f, 100f)
-                val coinsEarned = CoinRewardHelper.fromScoreAndDifficulty(
-                    score = finalScore.toInt(),
-                    gameDifficultyLevel = _state.value.difficultyLevel
+    private suspend fun handleOneRoundWonderScore(rawScore: Float) {
+        val finalScore = rawScore.coerceIn(0f, 100f)
+        val coinsEarned = CoinRewardHelper.fromScoreAndDifficulty(
+            score = finalScore.toInt(),
+            gameDifficultyLevel = _state.value.difficultyLevel
+        )
+
+        walletRepository.addCoins(coinsEarned)
+
+        _state.update {
+            it.copy(
+                finalScore = finalScore,
+                roundCoins = coinsEarned,
+                totalCoins = coinsEarned
+            )
+        }
+    }
+
+    private suspend fun handleSpeedDrawScore(rawScore: Float) {
+        val currentScore = _state.value.finalScore
+        var drawingCount = _state.value.drawingCounter
+        val newScore = rawScore.coerceIn(0f, 100f)
+
+        val coinsEarned = CoinRewardHelper.fromScoreAndDifficulty(
+            score = newScore.toInt(),
+            gameDifficultyLevel = _state.value.difficultyLevel
+        )
+
+        walletRepository.addCoins(coinsEarned)
+
+        if (newScore >= 40) {
+            _state.update {
+                it.copy(
+                    finalScore = (currentScore * drawingCount + newScore) / (drawingCount + 1),
+                    drawingCounter = ++drawingCount,
+                    roundCoins = coinsEarned,
+                    totalCoins = it.totalCoins + coinsEarned
                 )
-
-                walletRepository.addCoins(coinsEarned)
-
-                _state.update {
-                    it.copy(
-                        finalScore = finalScore,
-                        roundCoins = coinsEarned,
-                        totalCoins = coinsEarned
-                    )
-                }
             }
-            GameType.SPEED_DRAW -> {
-                val currentScore = _state.value.finalScore
-                var drawingCount = _state.value.drawingCounter
-                val newScore = rawScore.coerceIn(0f, 100f)
-
-                val coinsEarned = CoinRewardHelper.fromScoreAndDifficulty(
-                    score = newScore.toInt(),
-                    gameDifficultyLevel = _state.value.difficultyLevel
+        } else {
+            _state.update {
+                it.copy(
+                    roundCoins = coinsEarned,
+                    totalCoins = it.totalCoins + coinsEarned
                 )
-
-                walletRepository.addCoins(coinsEarned)
-
-                if (newScore >= 40) {
-                    _state.update {
-                        it.copy(
-                            finalScore = (currentScore * drawingCount + newScore) / (drawingCount + 1),
-                            drawingCounter = ++drawingCount,
-                            roundCoins = coinsEarned,
-                            totalCoins = it.totalCoins + coinsEarned
-                        )
-                    }
-                } else {
-                    _state.update {
-                        it.copy(
-                            roundCoins = coinsEarned,
-                            totalCoins = it.totalCoins + coinsEarned
-                        )
-                    }
-                }
             }
-            GameType.ENDLESS -> {
-                val currentScore = _state.value.finalScore
-                var drawingCount = _state.value.drawingCounter
-                val newScore = rawScore.coerceIn(0f, 100f)
+        }
+    }
 
-                val coinsEarned = CoinRewardHelper.fromScoreAndDifficulty(
-                    score = newScore.toInt(),
-                    gameDifficultyLevel = _state.value.difficultyLevel
+    private suspend fun handleEndlessScore(rawScore: Float) {
+        val currentScore = _state.value.finalScore
+        var drawingCount = _state.value.drawingCounter
+        val newScore = rawScore.coerceIn(0f, 100f)
+
+        val coinsEarned = CoinRewardHelper.fromScoreAndDifficulty(
+            score = newScore.toInt(),
+            gameDifficultyLevel = _state.value.difficultyLevel
+        )
+
+        walletRepository.addCoins(coinsEarned)
+
+        if (newScore >= 70) {
+            _state.update {
+                it.copy(
+                    finalScore = (currentScore * drawingCount + newScore) / (drawingCount + 1),
+                    lastScore = newScore,
+                    drawingCounter = ++drawingCount,
+                    roundCoins = coinsEarned,
+                    totalCoins = it.totalCoins + coinsEarned
                 )
-
-                walletRepository.addCoins(coinsEarned)
-
-                if (newScore >= 70) {
-                    _state.update {
-                        it.copy(
-                            finalScore = (currentScore * drawingCount + newScore) / (drawingCount + 1),
-                            lastScore = newScore,
-                            drawingCounter = ++drawingCount,
-                            roundCoins = coinsEarned,
-                            totalCoins = it.totalCoins + coinsEarned
-                        )
-                    }
-                } else {
-                    _state.update {
-                        it.copy(
-                            lastScore = newScore,
-                            roundCoins = coinsEarned,
-                            totalCoins = it.totalCoins + coinsEarned
-                        )
-                    }
-                }
+            }
+        } else {
+            _state.update {
+                it.copy(
+                    lastScore = newScore,
+                    roundCoins = coinsEarned,
+                    totalCoins = it.totalCoins + coinsEarned
+                )
             }
         }
     }
@@ -412,21 +412,24 @@ class GameplayViewModel(
         viewModelScope.launch {
             when (state.value.gameType) {
                 GameType.SPEED_DRAW -> {
-                    _state.update { it.copy(
-                        remainingCountdownTime = 0L,
-                        drawingCounter = 0
-                    ) }
+                    _state.update {
+                        it.copy(
+                            remainingCountdownTime = 0L,
+                            drawingCounter = 0
+                        )
+                    }
                 }
                 GameType.ENDLESS -> {
-                    _state.update { it.copy(
-                        lastScore = 0f
-                    ) }
+                    _state.update { it.copy(lastScore = 0f) }
                 }
                 else -> { }
             }
-            eventChannel.send(GameplayEvent.NavigateToGameplayScreen(
-                gameType = _state.value.gameType,
-                difficultyLevel = _state.value.difficultyLevel))
+            eventChannel.send(
+                GameplayEvent.NavigateToGameplayScreen(
+                    gameType = _state.value.gameType,
+                    difficultyLevel = _state.value.difficultyLevel
+                )
+            )
         }
     }
 
@@ -464,22 +467,37 @@ class GameplayViewModel(
     }
 
     private fun saveStatistics() {
-        val gameType = _state.value.gameType
-        val finalAccuracy = _state.value.finalScore
-        val drawingsCount = _state.value.drawingCounter.toFloat()
-
         viewModelScope.launch {
-            val currentBestAccuracy = statisticsRepository.getStatistics(gameType.name, StatisticsType.ACCURACY.name)
-            if (currentBestAccuracy != null && finalAccuracy > currentBestAccuracy.value) {
-                statisticsRepository.updateStatistics(currentBestAccuracy.copy(value = finalAccuracy))
-                _state.update { it.copy(isNewBestAccuracy = true) }
-            }
+            val gameType = _state.value.gameType
+            val finalAccuracy = _state.value.finalScore
+            val drawingsCount = _state.value.drawingCounter.toFloat()
 
-            val currentBestCount = statisticsRepository.getStatistics(gameType.name, StatisticsType.COUNT.name)
-            if (currentBestCount != null && drawingsCount > currentBestCount.value) {
-                statisticsRepository.updateStatistics(currentBestCount.copy(value = drawingsCount))
-                _state.update { it.copy(isNewBestDrawings = true) }
-            }
+            updateBestAccuracy(gameType, finalAccuracy)
+            updateBestDrawingCount(gameType, drawingsCount)
+        }
+    }
+
+    private suspend fun updateBestAccuracy(gameType: GameType, finalAccuracy: Float) {
+        val currentBestAccuracy = statisticsRepository.getStatistics(
+            gameType.name,
+            StatisticsType.ACCURACY.name
+        )
+
+        if (currentBestAccuracy != null && finalAccuracy > currentBestAccuracy.value) {
+            statisticsRepository.updateStatistics(currentBestAccuracy.copy(value = finalAccuracy))
+            _state.update { it.copy(isNewBestAccuracy = true) }
+        }
+    }
+
+    private suspend fun updateBestDrawingCount(gameType: GameType, drawingsCount: Float) {
+        val currentBestCount = statisticsRepository.getStatistics(
+            gameType.name,
+            StatisticsType.COUNT.name
+        )
+
+        if (currentBestCount != null && drawingsCount > currentBestCount.value) {
+            statisticsRepository.updateStatistics(currentBestCount.copy(value = drawingsCount))
+            _state.update { it.copy(isNewBestDrawings = true) }
         }
     }
 }
