@@ -26,6 +26,7 @@ data class GameplayState (
     val roundCoins: Int = 0,
     val totalCoins: Int = 0,
     val strokeColor: Color = Color.Black,
+    val strokeGradientColors: List<Color>? = null,
     val backgroundColor: Color = Color.White,
     val backgroundTexture: Int? = null
 ) {

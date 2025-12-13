@@ -15,5 +15,7 @@ data class ShopItem(
     @param:DrawableRes val previewBackgroundImage: Int? = null,
     val isPurchased: Boolean = false,
     val isSelected: Boolean = false,
-    val cost: Int = 0
+    val cost: Int = 0,
+    val isGradient: Boolean = false,
+    val gradientColors: List<Color>? = null
 )

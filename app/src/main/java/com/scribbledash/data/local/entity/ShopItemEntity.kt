@@ -15,5 +15,7 @@ data class ShopItemEntity(
     val isDefault: Boolean,
     val isPurchased: Boolean,
     val isSelected: Boolean,
-    val previewBackgroundImageRes: Int? = null
+    val previewBackgroundImageRes: Int? = null,
+    val isGradient: Boolean = false,
+    val gradientColors: String? = null
 )
