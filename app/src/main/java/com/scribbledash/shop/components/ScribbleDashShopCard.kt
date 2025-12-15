@@ -153,13 +153,33 @@ fun ScribbleDashShopCard(
                         )
                     }
 
-                    item.previewColor?.let { color ->
+//                    item.previewColor?.let { color ->
+//                        ScribbleDashPreviewPath(
+//                            color = color,
+//                            modifier = Modifier
+//                                .fillMaxWidth(0.85f)
+//                                .aspectRatio(94f / 70f)
+//                        )
+//                    }
+
+                    if (item.isGradient && item.gradientColors != null) {
                         ScribbleDashPreviewPath(
-                            color = color,
+                            color = null,
+                            gradientColors = item.gradientColors,
                             modifier = Modifier
                                 .fillMaxWidth(0.85f)
                                 .aspectRatio(94f / 70f)
-                        )
+                            )
+                    } else {
+                        item.previewColor?.let { color ->
+                            ScribbleDashPreviewPath(
+                                color = color,
+                                gradientColors = null,
+                                modifier = Modifier
+                                    .fillMaxWidth(0.85f)
+                                    .aspectRatio(94f / 70f)
+                            )
+                        }
                     }
 
                     if (!item.isPurchased) {

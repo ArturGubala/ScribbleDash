@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -18,7 +19,8 @@ import com.scribbledash.ui.theme.ScribbleDashTheme
 
 @Composable
 fun ScribbleDashPreviewPath(
-    color: Color,
+    color: Color?,
+    gradientColors: List<Color>?,
     modifier: Modifier = Modifier
 ) {
     Canvas(modifier = modifier) {
@@ -96,9 +98,29 @@ fun ScribbleDashPreviewPath(
             )
         }
 
+        val brush = when {
+            !gradientColors.isNullOrEmpty() -> {
+                Brush.horizontalGradient(
+                    colors = gradientColors,
+                    startX = 0f,
+                    endX = width
+                )
+            }
+            color != null -> {
+                Brush.linearGradient(
+                    colors = listOf(color, color)
+                )
+            }
+            else -> {
+                Brush.linearGradient(
+                    colors = listOf(Color.Black, Color.Black)
+                )
+            }
+        }
+
         drawPath(
             path = path,
-            color = color,
+            brush = brush,
             style = Stroke(
                 width = 3f * scale,
                 cap = StrokeCap.Round,
@@ -115,6 +137,7 @@ fun ScribblePreviewDashPreviewPath() {
         Box(modifier = Modifier.size(94.dp, 70.dp)) {
             ScribbleDashPreviewPath(
                 color = Color.Black,
+                gradientColors = null,
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -130,14 +153,48 @@ fun ScribblePreviewDifferentColorsDashPreviewPath() {
             modifier = Modifier.padding(16.dp)
         ) {
             Box(modifier = Modifier.size(80.dp, 60.dp)) {
-                ScribbleDashPreviewPath(color = Color.Black, modifier = Modifier.fillMaxSize())
+                ScribbleDashPreviewPath(
+                    color = Color.Black,
+                    gradientColors = null,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
             Box(modifier = Modifier.size(80.dp, 60.dp)) {
-                ScribbleDashPreviewPath(color = Color.Red, modifier = Modifier.fillMaxSize())
+                ScribbleDashPreviewPath(
+                    color = Color.Red,
+                    gradientColors = null,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
             Box(modifier = Modifier.size(80.dp, 60.dp)) {
-                ScribbleDashPreviewPath(color = Color(0xFF6200EE), modifier = Modifier.fillMaxSize())
+                ScribbleDashPreviewPath(
+                    color = Color(0xFF6200EE),
+                    gradientColors = null,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ScribblePreviewRainbowGradient() {
+    ScribbleDashTheme {
+        Box(modifier = Modifier.size(94.dp, 70.dp)) {
+            ScribbleDashPreviewPath(
+                color = null,
+                gradientColors = listOf(
+                    Color(0xFFFF0000),
+                    Color(0xFFFFA500),
+                    Color(0xFFFFFF00),
+                    Color(0xFF008000),
+                    Color(0xFF00EEFF),
+                    Color(0xFF0000FF),
+                    Color(0xFFFB02FB)
+                ),
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }

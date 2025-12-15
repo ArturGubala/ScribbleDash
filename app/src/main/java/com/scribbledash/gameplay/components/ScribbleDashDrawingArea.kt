@@ -21,7 +21,9 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.AndroidPath
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.asComposePath
@@ -51,6 +53,7 @@ fun ScribbleDashDrawingArea(
     onAction: (GameplayAction) -> Unit,
     modifier: Modifier = Modifier,
     strokeColor: Color = Color.Black,
+    strokeGradientColors: List<Color>? = null,
     canDrawing: Boolean = true,
     backgroundColor: Color = Color.White,
     @DrawableRes backgroundTexture: Int? = null
@@ -150,24 +153,44 @@ fun ScribbleDashDrawingArea(
                     }
             ) {
                 if (canDrawing) {
+                    val brush = if (!strokeGradientColors.isNullOrEmpty()) {
+                        Brush.horizontalGradient(
+                            colors = strokeGradientColors,
+                            startX = 0f,
+                            endX = size.width
+                        )
+                    } else {
+                        SolidColor(strokeColor)
+                    }
+
                     paths.fastForEach { pathData ->
                         drawPath(
                             path = pathData.path,
-                            color = strokeColor,
+                            brush = brush,
                         )
                     }
                     currentPath?.let {
                         drawPath(
                             path = it.path,
-                            color = strokeColor
+                            brush = brush
                         )
                     }
                 } else {
+                    val brush = if (!strokeGradientColors.isNullOrEmpty()) {
+                        Brush.horizontalGradient(
+                            colors = strokeGradientColors,
+                            startX = 0f,
+                            endX = size.width
+                        )
+                    } else {
+                        SolidColor(strokeColor)
+                    }
+
                     drawPath(
                         path = exampleDrawing!!.path
                             .adjustToCanvas(canvasSize = size, bounds = exampleDrawing.bounds)
                             .asComposePath(),
-                        color = Color.Black,
+                        brush = brush,
                         style = Stroke(width = 10f)
                     )
                 }
@@ -194,7 +217,7 @@ fun ScribbleDashDrawingAreaPreview() {
 
 private fun DrawScope.drawPath(
     path: List<Offset>,
-    color: Color,
+    brush: Brush,
     smoothness: Int = 5,
     thickness: Float = 10f
 ) {
@@ -220,7 +243,7 @@ private fun DrawScope.drawPath(
     }
     drawPath(
         path = smoothedPath,
-        color = color,
+        brush = brush,
         style = Stroke(
             width = thickness,
             cap = StrokeCap.Round,
