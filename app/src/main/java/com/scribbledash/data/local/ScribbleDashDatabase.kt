@@ -114,7 +114,7 @@ abstract class ScribbleDashDatabase : RoomDatabase() {
                 statisticDao.insertAll(statistics)
 
                 // Existing wallet
-                walletDao.insertWallet(WalletEntity(id = 1, coins = 500))
+                walletDao.insertWallet(WalletEntity(id = 1, coins = 0))
 
                 // ✅ NEW: Pre-populate shop items
                 val shopItems = createDefaultShopItems()
@@ -302,7 +302,6 @@ abstract class ScribbleDashDatabase : RoomDatabase() {
                     )
                 )
 
-                // Legendary Pen (999 coins)
                 items.add(
                     ShopItemEntity(
                         id = "pen_rainbow",
@@ -313,13 +312,12 @@ abstract class ScribbleDashDatabase : RoomDatabase() {
                         cost = 999,
                         isDefault = false,
                         isPurchased = false,
-                        isSelected = false
+                        isSelected = false,
+                        isGradient = true,
+                        gradientColors = "#FF0000,#FFA500,#FFFF00,#008000,#00EEFF,#0000FF,#FB02FB"
                     )
                 )
 
-                // ========== CANVAS BACKGROUNDS ==========
-
-                // Basic Canvas (80 coins each)
                 items.add(
                     ShopItemEntity(
                         id = "canvas_white",
