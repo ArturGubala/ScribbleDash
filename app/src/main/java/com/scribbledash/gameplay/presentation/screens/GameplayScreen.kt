@@ -212,6 +212,7 @@ private fun GameplayScreen(
                         .fillMaxWidth()
                         .weight(1f),
                     strokeColor = state.strokeColor,
+                    strokeGradientColors = state.strokeGradientColors,
                     canDrawing = canDrawing,
                     backgroundColor = state.backgroundColor,
                     backgroundTexture = state.backgroundTexture

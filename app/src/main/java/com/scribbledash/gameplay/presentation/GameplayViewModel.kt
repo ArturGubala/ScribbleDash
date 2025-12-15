@@ -3,6 +3,7 @@ package com.scribbledash.gameplay.presentation
 import android.graphics.Path
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.scribbledash.core.domain.model.Drawings
@@ -256,8 +257,14 @@ class GameplayViewModel(
             val shopItemBackgroundColor = shopRepository.getSelectedItemByType(ShopItemType.CANVAS_BACKGROUND)
             val shopItemTexture = shopRepository.getSelectedItemByType(ShopItemType.CANVAS_BACKGROUND)
 
-            shopItemPenColor?.previewColor?.let { color ->
-                _state.update { it.copy(strokeColor = color) }
+            shopItemPenColor?.let { color ->
+                if (shopItemPenColor.isGradient) {
+                    _state.update { it.copy(strokeGradientColors = shopItemPenColor.gradientColors) }
+                } else {
+                    color.previewColor?.let { color ->
+                        _state.update { it.copy(strokeColor = color) }
+                    }
+                }
             }
 
             shopItemBackgroundColor?.previewBackgroundColor?.let { bgColor ->

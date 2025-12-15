@@ -198,12 +198,12 @@ private fun ResultScreen(
                             onAction = onAction,
                             modifier = Modifier.size(160.dp),
                             strokeColor = state.strokeColor,
+                            strokeGradientColors = state.strokeGradientColors,
                             canDrawing = false,
                             backgroundColor = state.backgroundColor,
                             backgroundTexture = state.backgroundTexture
                         )
                     }
-
                 }
 
                 if (state.gameType == GameType.ENDLESS) {
