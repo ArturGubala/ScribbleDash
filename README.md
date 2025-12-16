@@ -15,17 +15,17 @@ The game combines speed, observation, and creativity, offering multiple game mod
 ## Screenshots
 
 <p align="center">
-  <img src="screenshots/sd_home.png" width="220" />
-  <img src="screenshots/sd_difficult_level.png" width="220" />
-  <img src="screenshots/sd_preview.png" width="220" />
-  <img src="screenshots/sd_summary.png" width="220" />
+  <img src="screenshots/sd_home.png" width="200" />
+  <img src="screenshots/sd_difficult_level.png" width="200" />
+  <img src="screenshots/sd_preview.png" width="200" />
+  <img src="screenshots/sd_summary.png" width="200" />
 </p>
 
 <p align="center">
-  <img src="screenshots/sd_result.png" width="220" />
-  <img src="screenshots/sd_statistics.png" width="220" />
-  <img src="screenshots/sd_shop_pen.png" width="220" />
-  <img src="screenshots/sd_shop_canvas.png" width="220" />
+  <img src="screenshots/sd_result.png" width="200" />
+  <img src="screenshots/sd_statistics.png" width="200" />
+  <img src="screenshots/sd_shop_pen.png" width="200" />
+  <img src="screenshots/sd_shop_canvas.png" width="200" />
 </p>
 
 ---
