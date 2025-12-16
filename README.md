@@ -72,16 +72,6 @@ The game combines speed, observation, and creativity, offering multiple game mod
 
 ---
 
-## Tech Stack
-
-* **Platform:** Android
-* **Language:** Kotlin
-* **Architecture:** MVVM
-* **UI:** XML / Jetpack Compose
-* **Async:** Kotlin Coroutines
-
----
-
 ## Getting Started
 
 ### Prerequisites
