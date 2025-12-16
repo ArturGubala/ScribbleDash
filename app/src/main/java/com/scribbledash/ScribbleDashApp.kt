@@ -2,6 +2,7 @@ package com.scribbledash
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -28,6 +29,7 @@ import com.scribbledash.statistics.di.statisticsViewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
+import kotlin.math.log
 
 class ScribbleDashCore: Application() {
     override fun onCreate() {
@@ -67,9 +69,7 @@ fun ScribbleDashApp(
                 ScribbleDashNavigation(appState = appState)
             }
         },
-        containerColor = Color.Transparent,
-        modifier = Modifier
-            .background(GradientScheme.PrimaryGradient)
+        containerColor = Color.Transparent
     ) { padding ->
         ScribbleDashNavHost(
             appState = appState,
